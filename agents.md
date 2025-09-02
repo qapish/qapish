@@ -130,3 +130,19 @@ This document tells human and AI contributors how to work inside this repo.
 - **Containers:** Base images should be Fedora/ubi/rpm-based. Avoid Debian/Ubuntu bases. Keep runtime parity with host expectations (rootless Podman).
 - **Repositories:** Prefer official Fedora repos; COPR is acceptable when necessary and should be documented clearly. Avoid `curl | bash` style installers; package or pin via rpm when possible.
 - **Exceptions:** None by default. If a dependency is temporarily unavailable on Fedora, open an issue proposing a Fedora-compatible path (COPR/spec, alternative crate, or vendoring) and document the temporary workaround in `.docs/*.md`. Do **not** merge `apt`/Debian instructions unless they are in addition or complimentary to comprehensive Fedora instructions.
+
+
+## Code Comments & Justification Policy
+
+- **Keep comments functional, not opinionated.** Comments exist to clarify *what the code does*, *how to use it*, and *any invariants/safety contracts*. Do **not** write essays justifying design or technology choices inline.
+- **No rationales/diatribes in code.** If you feel compelled to record the “why,” put it in **`.docs/<topic>.md`** (gitignored) and reference it briefly in the PR description. Avoid polluting the codebase with subjective commentary or history.
+- **Rustdoc is for APIs.** Use `///` to document public types/functions with purpose, inputs/outputs, errors, invariants, and examples. Keep it concise and factual.
+- **Allowed short comments:** brief clarity, invariants, and safety notes.
+  - ✅ `// SAFETY: buffer is initialized; length checked above`
+  - ✅ `// TODO(#123): replace temp file with in-mem store`
+  - ✅ `// Precondition: id is UUIDv4`
+- **Not allowed:** technology rants, personal anecdotes, competitive takes, or historical justifications.
+  - ❌ `// We chose tokio because async-std is slower in our tests…`
+  - ❌ `// In 2021 we tried Nginx and it was a mess, so now…`
+  - ❌ `// I prefer this pattern because it feels cleaner`
+- **Architecture/design notes:** put ADR-style writeups in `.docs/*.md` if truly necessary. The code should remain clean and free of long-form explanations.
