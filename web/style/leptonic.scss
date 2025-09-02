@@ -1354,6 +1354,15 @@ code {
     font-size: 0.9rem;
 }
 
+/* Clean navigation styling */
+.nav-link-simple {
+    transition: opacity 0.2s ease;
+}
+
+.back-link-center {
+    transition: all 0.2s ease;
+}
+
 /* Responsive adjustments */
 @media (max-width: 1024px) {
     .packages-grid {

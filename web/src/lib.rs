@@ -458,8 +458,122 @@ fn Landing() -> impl IntoView {
                 50% { transform: translateY(-20px); }
             }
 
+            /* Package navigation styles */
+
+            .package-counter {
+                color: var(--qp-text-dark);
+                font-weight: 500;
+                opacity: 0.7;
+                font-size: 0.875rem;
+                white-space: nowrap;
+            }
+
+            .package-nav-top {
+                margin-bottom: 1.5rem;
+            }
+
+            .package-nav-top .bottom-nav-simple {
+                justify-content: space-between;
+                max-width: 300px;
+            }
+
+            .package-nav-bottom {
+                margin-top: 2rem;
+                padding: 1.5rem 0;
+                border-top: 1px solid rgba(226, 232, 240, 0.1);
+            }
+
+            .bottom-nav-simple {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 3rem;
+                width: 100%;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+
+            .nav-link-simple {
+                color: var(--qp-cyan);
+                text-decoration: none;
+                font-weight: 500;
+                font-size: 0.9rem;
+                padding: 0.5rem 0;
+                transition: opacity 0.2s ease;
+                opacity: 0.8;
+            }
+
+            .nav-link-simple:hover {
+                opacity: 1;
+                text-decoration: underline;
+            }
+
+            .back-link-center {
+                color: var(--qp-text-dark);
+                text-decoration: none;
+                font-weight: 500;
+                font-size: 0.9rem;
+                opacity: 0.7;
+                transition: all 0.2s ease;
+            }
+
+            .back-link-center:hover {
+                color: var(--qp-cyan);
+                opacity: 1;
+            }
+
+            /* Responsive navigation */
+            @media (max-width: 768px) {
+                .bottom-nav-simple {
+                    flex-direction: column;
+                    gap: 1rem;
+                    max-width: none;
+                }
+
+                .package-counter {
+                    font-size: 0.8rem;
+                    order: -1;
+                }
+            }
+
+            /* Dark theme support */
+            @media (prefers-color-scheme: dark) {
+                .package-counter {
+                    color: var(--qp-text-dark);
+                }
+
+                .nav-link-simple {
+                    color: var(--qp-cyan);
+                }
+
+                .back-link-center {
+                    color: var(--qp-text-dark);
+                }
+
+                .back-link-center:hover {
+                    color: var(--qp-cyan);
+                }
+            }
+
+            .dark .package-counter {
+                color: var(--qp-text-dark);
+            }
+
+            .dark .nav-link-simple {
+                color: var(--qp-cyan);
+            }
+
+            .dark .back-link-center {
+                color: var(--qp-text-dark);
+            }
+
+            .dark .back-link-center:hover {
+                color: var(--qp-cyan);
+            }
+
+            /* Package Grid Styles */
             .packages-section {
-                padding: 6rem 2rem;
+                padding: 4rem 2rem;
                 max-width: 1400px;
                 margin: 0 auto;
             }
@@ -961,6 +1075,7 @@ fn PackageDetail() -> impl IntoView {
     let params = use_params_map();
     let sku = move || params.with(|params| params.get("sku").cloned().unwrap_or_default());
 
+    // Fetch current package
     let package_resource = create_resource(sku, |sku| async move {
         if sku.is_empty() {
             return None;
@@ -973,6 +1088,19 @@ fn PackageDetail() -> impl IntoView {
         }
     });
 
+    // Fetch all packages for navigation
+    let all_packages = create_resource(
+        || (),
+        |_| async move {
+            let url = format!("{}/api/packages", api_base());
+            let resp = gloo_net::http::Request::get(&url).send().await;
+            match resp {
+                Ok(r) if r.status() == 200 => r.json::<Vec<Package>>().await.ok(),
+                _ => None,
+            }
+        },
+    );
+
     view! {
         <div class="package-detail-container">
             <Suspense fallback=move || view! {
@@ -982,6 +1110,23 @@ fn PackageDetail() -> impl IntoView {
                 </div>
             }>
                 {move || {
+                    // Get navigation info
+                    let nav_info = move || {
+                        if let (Some(Some(current_pkg)), Some(Some(all_pkgs))) = (package_resource.get(), all_packages.get()) {
+                            let current_index = all_pkgs.iter().position(|p| p.sku == current_pkg.sku);
+                            if let Some(index) = current_index {
+                                let total = all_pkgs.len();
+                                let prev_index = if index == 0 { total - 1 } else { index - 1 };
+                                let next_index = if index == total - 1 { 0 } else { index + 1 };
+                                Some((all_pkgs[prev_index].sku.clone(), all_pkgs[next_index].sku.clone(), index + 1, total))
+                            } else {
+                                None
+                            }
+                        } else {
+                            None
+                        }
+                    };
+
                     package_resource.get().map(|pkg_opt| match pkg_opt {
                         Some(pkg) => {
                             let availability_text = match &pkg.availability {
@@ -1005,6 +1150,25 @@ fn PackageDetail() -> impl IntoView {
                             view! {
                                 <div class="package-detail">
                                     <div class="package-header">
+                                        <div class="package-nav-top">
+                                            {move || {
+                                                nav_info().map(|(prev_sku, next_sku, current_num, total)| {
+                                                    view! {
+                                                        <div class="bottom-nav-simple">
+                                                            <A href={format!("/package/{}", prev_sku)} class="nav-link-simple">
+                                                                "← Previous"
+                                                            </A>
+                                                            <div class="package-counter">
+                                                                <span>{current_num}" of "{total}</span>
+                                                            </div>
+                                                            <A href={format!("/package/{}", next_sku)} class="nav-link-simple">
+                                                                "Next →"
+                                                            </A>
+                                                        </div>
+                                                    }.into_view()
+                                                }).unwrap_or_else(|| view! { <div></div> }.into_view())
+                                            }}
+                                        </div>
                                         <h1 class="package-title">{pkg.name.clone()}</h1>
                                         <div class="package-sku">SKU: {pkg.sku.clone()}</div>
                                     </div>
@@ -1149,7 +1313,29 @@ fn PackageDetail() -> impl IntoView {
                                     </div>
 
                                     <div class="package-footer">
-                                        <A href="/" class="back-link">"← Back to Packages"</A>
+                                        <div class="package-nav-bottom">
+                                            <div class="bottom-nav-simple">
+                                                {move || {
+                                                    nav_info().map(|(prev_sku, _next_sku, _current_num, _total)| {
+                                                        view! {
+                                                            <A href={format!("/package/{}", prev_sku)} class="nav-link-simple">
+                                                                "← Previous"
+                                                            </A>
+                                                        }.into_view()
+                                                    }).unwrap_or_else(|| view! { <span></span> }.into_view())
+                                                }}
+                                                <A href="/" class="back-link-center">"Back to Packages"</A>
+                                                {move || {
+                                                    nav_info().map(|(_prev_sku, next_sku, _current_num, _total)| {
+                                                        view! {
+                                                            <A href={format!("/package/{}", next_sku)} class="nav-link-simple">
+                                                                "Next →"
+                                                            </A>
+                                                        }.into_view()
+                                                    }).unwrap_or_else(|| view! { <span></span> }.into_view())
+                                                }}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             }.into_view()
