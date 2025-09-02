@@ -1,3 +1,5 @@
+use leptonic::components::prelude::{LeptonicTheme, Root};
+
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -122,15 +124,17 @@ fn Dashboard() -> impl IntoView {
 fn App() -> impl IntoView {
     provide_meta_context();
     view! {
-        <Router>
-            <main>
-                <Routes>
-                    <Route path="/" view=Landing />
-                    <Route path="/signup" view=Signup />
-                    <Route path="/dashboard" view=Dashboard />
-                </Routes>
-            </main>
-        </Router>
+        <Root default_theme=LeptonicTheme::default()>
+            <Router>
+                <main>
+                    <Routes>
+                        <Route path="/" view=Landing />
+                        <Route path="/signup" view=Signup />
+                        <Route path="/dashboard" view=Dashboard />
+                    </Routes>
+                </main>
+            </Router>
+        </Root>
     }
 }
 

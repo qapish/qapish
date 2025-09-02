@@ -7,6 +7,8 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+leptonic = { git = "https://github.com/lpotthast/leptonic", branch = "main" }
+leptonic-theme = { git = "https://github.com/lpotthast/leptonic", branch = "main" }
 leptos = { version = "0.6", features = ["csr"] }
 leptos_meta = "0.6"
 leptos_router = { version = "0.6", features = ["csr"] }
