@@ -1,0 +1,79 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8fafc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e2e8f0;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="chipGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#dc2626;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#991b1b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0891b2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="300" fill="url(#bgGradient)" stroke="#06b6d4" stroke-width="2"/>
+
+  <!-- Title -->
+  <text x="200" y="30" text-anchor="middle" fill="#0f172a" font-family="Inter, sans-serif" font-size="20" font-weight="700">Technical Specifications</text>
+
+  <!-- Main GPU chip representation -->
+  <rect x="150" y="50" width="100" height="100" rx="8" fill="url(#chipGradient)" stroke="#991b1b" stroke-width="2"/>
+
+  <!-- Chip details -->
+  <rect x="160" y="60" width="80" height="80" rx="4" fill="#450a0a" stroke="#7f1d1d" stroke-width="1"/>
+
+  <!-- AMD logo placeholder -->
+  <text x="200" y="85" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold">AMD</text>
+  <text x="200" y="105" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="600">A8060</text>
+  <text x="200" y="125" text-anchor="middle" fill="#fca5a5" font-family="Arial, sans-serif" font-size="10">96GB HBM3e</text>
+
+  <!-- Memory modules -->
+  <rect x="80" y="80" width="60" height="40" rx="4" fill="#1f2937" stroke="#374151" stroke-width="1"/>
+  <text x="110" y="105" text-anchor="middle" fill="#06b6d4" font-family="Arial, sans-serif" font-size="10" font-weight="bold">HBM3e</text>
+
+  <rect x="260" y="80" width="60" height="40" rx="4" fill="#1f2937" stroke="#374151" stroke-width="1"/>
+  <text x="290" y="105" text-anchor="middle" fill="#06b6d4" font-family="Arial, sans-serif" font-size="10" font-weight="bold">HBM3e</text>
+
+  <!-- Specifications table -->
+  <rect x="30" y="170" width="340" height="110" rx="6" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Header -->
+  <rect x="30" y="170" width="340" height="30" rx="6" fill="url(#accentGradient)"/>
+  <text x="200" y="190" text-anchor="middle" fill="white" font-family="Inter, sans-serif" font-size="14" font-weight="600">AMD A8060 Specifications</text>
+
+  <!-- Spec rows -->
+  <g font-family="Inter, sans-serif" font-size="12">
+    <!-- Row 1 -->
+    <text x="40" y="215" fill="#374151" font-weight="600">Compute Units:</text>
+    <text x="360" y="215" text-anchor="end" fill="#0f172a" font-weight="500">304 CUs</text>
+
+    <!-- Row 2 -->
+    <text x="40" y="235" fill="#374151" font-weight="600">Memory:</text>
+    <text x="360" y="235" text-anchor="end" fill="#0f172a" font-weight="500">96GB HBM3e</text>
+
+    <!-- Row 3 -->
+    <text x="40" y="255" fill="#374151" font-weight="600">Memory Bandwidth:</text>
+    <text x="360" y="255" text-anchor="end" fill="#0f172a" font-weight="500">3.2 TB/s</text>
+
+    <!-- Row 4 -->
+    <text x="40" y="275" fill="#374151" font-weight="600">Peak FP16:</text>
+    <text x="360" y="275" text-anchor="end" fill="#0f172a" font-weight="500">836 TFLOPS</text>
+  </g>
+
+  <!-- Connection lines -->
+  <g stroke="#06b6d4" stroke-width="2" opacity="0.6">
+    <line x1="140" y1="100" x2="160" y2="100"/>
+    <line x1="240" y1="100" x2="260" y2="100"/>
+  </g>
+
+  <!-- Performance indicators -->
+  <circle cx="50" cy="60" r="8" fill="#22c55e"/>
+  <text x="65" y="66" fill="#16a34a" font-family="Inter, sans-serif" font-size="10" font-weight="600">Power Efficient</text>
+
+  <circle cx="280" cy="60" r="8" fill="#f59e0b"/>
+  <text x="295" y="66" fill="#d97706" font-family="Inter, sans-serif" font-size="10" font-weight="600">AI Optimized</text>
+</svg>

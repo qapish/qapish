@@ -1,4 +1,7 @@
-use ai::{CreateOrderRequest, CreateOrderResponse, GpuClass, OrderSummary, Package};
+use ai::{
+    Availability, CreateOrderRequest, CreateOrderResponse, GpuClass, OrderSummary, Package,
+    PackageImage, Provenance,
+};
 use anyhow::Result;
 use persistence::Database;
 use tracing::info;
@@ -43,6 +46,7 @@ impl InfraState {
                 Package {
                     id: Uuid::parse_str("550e8400-e29b-41d4-a716-446655440001").unwrap(),
                     name: "Midrange Consumer".to_string(),
+                    sku: "1x-a8060-96".to_string(),
                     description: "Perfect for development and small-scale inference workloads"
                         .to_string(),
                     hardware_description:
@@ -56,10 +60,30 @@ impl InfraState {
                     vram_gb: 96,
                     setup_price_usdc: 3000,
                     monthly_price_usdc: 200,
+                    images: vec![
+                        PackageImage {
+                            filename: "https://placehold.co/600x400/EEE/31343C?text=GMKtek+X2+Main"
+                                .to_string(),
+                            title: "GMKtek X2 Unit".to_string(),
+                            description:
+                                "Compact high-performance mini PC with integrated graphics"
+                                    .to_string(),
+                        },
+                        PackageImage {
+                            filename: "https://placehold.co/400x300/EEE/31343C?text=Rack+Setup"
+                                .to_string(),
+                            title: "Rack Installation".to_string(),
+                            description: "Professional rack mounting and cable management"
+                                .to_string(),
+                        },
+                    ],
+                    availability: Availability::InStock,
+                    provenance: Provenance::New,
                 },
                 Package {
                     id: Uuid::parse_str("550e8400-e29b-41d4-a716-446655440002").unwrap(),
                     name: "Top Consumer".to_string(),
+                    sku: "2x-n5090-64".to_string(),
                     description: "High-performance setup for demanding AI applications".to_string(),
                     hardware_description:
                         "Ryzen 9950, 64GB RAM, dual 32GB RTX 5090s, liquid cooling".to_string(),
@@ -71,10 +95,30 @@ impl InfraState {
                     vram_gb: 64,
                     setup_price_usdc: 20000,
                     monthly_price_usdc: 500,
+                    images: vec![
+                        PackageImage {
+                            filename: "https://placehold.co/600x400/EEE/31343C?text=Dual+RTX+5090"
+                                .to_string(),
+                            title: "Dual RTX 5090 Setup".to_string(),
+                            description:
+                                "High-performance dual GPU configuration with liquid cooling"
+                                    .to_string(),
+                        },
+                        PackageImage {
+                            filename: "https://placehold.co/500x400/EEE/31343C?text=Cooling+System"
+                                .to_string(),
+                            title: "Advanced Cooling".to_string(),
+                            description: "Custom liquid cooling solution for sustained performance"
+                                .to_string(),
+                        },
+                    ],
+                    availability: Availability::Build { hours: 48 },
+                    provenance: Provenance::New,
                 },
                 Package {
                     id: Uuid::parse_str("550e8400-e29b-41d4-a716-446655440003").unwrap(),
                     name: "Pro Server".to_string(),
+                    sku: "2x-h100-160".to_string(),
                     description: "Enterprise-grade AI infrastructure for production workloads"
                         .to_string(),
                     hardware_description: "Dual H100 80GB with enterprise cooling and redundancy"
@@ -87,6 +131,26 @@ impl InfraState {
                     vram_gb: 160,
                     setup_price_usdc: 100000,
                     monthly_price_usdc: 1000,
+                    images: vec![
+                        PackageImage {
+                            filename:
+                                "https://placehold.co/600x400/EEE/31343C?text=H100+Enterprise"
+                                    .to_string(),
+                            title: "H100 Server Rack".to_string(),
+                            description: "Enterprise-grade dual H100 configuration".to_string(),
+                        },
+                        PackageImage {
+                            filename:
+                                "https://placehold.co/500x350/EEE/31343C?text=Datacenter+View"
+                                    .to_string(),
+                            title: "Datacenter Installation".to_string(),
+                            description:
+                                "Secure datacenter environment with redundant power and cooling"
+                                    .to_string(),
+                        },
+                    ],
+                    availability: Availability::Preorder,
+                    provenance: Provenance::Used { hours: 1500 },
                 },
             ];
             return Ok(packages);
@@ -95,13 +159,109 @@ impl InfraState {
         let db_packages = self.db.as_ref().unwrap().get_active_packages().await?;
 
         // Convert from persistence::Package to ai::Package
-        let packages = db_packages
-            .into_iter()
-            .map(|p| {
+        let mut packages = Vec::new();
+        for p in db_packages {
+            let gpu_class = p.gpu_class_enum();
+
+            // Convert availability from database format
+            let availability = match p.availability_type.as_str() {
+                "preorder" => Availability::Preorder,
+                "in_stock" => Availability::InStock,
+                "build" => Availability::Build {
+                    hours: p.availability_value.unwrap_or(48) as u16,
+                },
+                _ => Availability::InStock,
+            };
+
+            // Convert provenance from database format
+            let provenance = match p.provenance_type.as_str() {
+                "new" => Provenance::New,
+                "used" => Provenance::Used {
+                    hours: p.provenance_value.unwrap_or(0) as u32,
+                },
+                _ => Provenance::New,
+            };
+
+            // Load package images
+            let db_images = self.db.as_ref().unwrap().get_package_images(p.id).await?;
+            let images = db_images
+                .into_iter()
+                .map(|(filename, title, description)| PackageImage {
+                    filename,
+                    title,
+                    description,
+                })
+                .collect();
+
+            packages.push(Package {
+                id: p.id,
+                name: p.name,
+                sku: p.sku.unwrap_or_default(),
+                description: p.description,
+                hardware_description: p.hardware_description,
+                cpu_cores: p.cpu_cores as u16,
+                ram_gb: p.ram_gb as u16,
+                storage_gb: p.storage_gb as u32,
+                gpu_class,
+                gpu_count: p.gpu_count as u16,
+                vram_gb: p.vram_gb as u16,
+                setup_price_usdc: p.setup_price_usdc as u32,
+                monthly_price_usdc: p.monthly_price_usdc as u32,
+                images,
+                availability,
+                provenance,
+            });
+        }
+
+        Ok(packages)
+    }
+
+    pub async fn get_package_by_sku(&self, sku: &str) -> Result<Option<Package>> {
+        if self.demo_mode {
+            let packages = self.get_packages().await?;
+            return Ok(packages.into_iter().find(|p| p.sku == sku));
+        }
+
+        let db_package = self.db.as_ref().unwrap().get_package_by_sku(sku).await?;
+
+        match db_package {
+            Some(p) => {
                 let gpu_class = p.gpu_class_enum();
-                Package {
+
+                // Convert availability from database format
+                let availability = match p.availability_type.as_str() {
+                    "preorder" => Availability::Preorder,
+                    "in_stock" => Availability::InStock,
+                    "build" => Availability::Build {
+                        hours: p.availability_value.unwrap_or(48) as u16,
+                    },
+                    _ => Availability::InStock,
+                };
+
+                // Convert provenance from database format
+                let provenance = match p.provenance_type.as_str() {
+                    "new" => Provenance::New,
+                    "used" => Provenance::Used {
+                        hours: p.provenance_value.unwrap_or(0) as u32,
+                    },
+                    _ => Provenance::New,
+                };
+
+                // Load package images
+                let db_images = self.db.as_ref().unwrap().get_package_images(p.id).await?;
+                let images = db_images
+                    .into_iter()
+                    .map(|(filename, title, description)| PackageImage {
+                        filename,
+                        title,
+                        description,
+                    })
+                    .collect();
+
+                Ok(Some(Package {
                     id: p.id,
                     name: p.name,
+                    sku: p.sku.unwrap_or_default(),
                     description: p.description,
                     hardware_description: p.hardware_description,
                     cpu_cores: p.cpu_cores as u16,
@@ -112,11 +272,13 @@ impl InfraState {
                     vram_gb: p.vram_gb as u16,
                     setup_price_usdc: p.setup_price_usdc as u32,
                     monthly_price_usdc: p.monthly_price_usdc as u32,
-                }
-            })
-            .collect();
-
-        Ok(packages)
+                    images,
+                    availability,
+                    provenance,
+                }))
+            }
+            None => Ok(None),
+        }
     }
 
     pub async fn create_order(&self, _req: CreateOrderRequest) -> Result<CreateOrderResponse> {

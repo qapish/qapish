@@ -1,0 +1,106 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="serverGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="enterpriseGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5b21b6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0891b2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="300" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+
+  <!-- Enterprise server chassis (wider) -->
+  <rect x="20" y="50" width="360" height="200" rx="8" fill="url(#serverGradient)" stroke="#7c3aed" stroke-width="3"/>
+
+  <!-- Front panel -->
+  <rect x="30" y="60" width="340" height="30" rx="4" fill="#1e293b" stroke="#374151" stroke-width="1"/>
+
+  <!-- LED indicators cluster -->
+  <circle cx="45" cy="75" r="4" fill="#22c55e"/>
+  <circle cx="60" cy="75" r="4" fill="#06b6d4"/>
+  <circle cx="75" cy="75" r="4" fill="#f59e0b"/>
+  <circle cx="90" cy="75" r="4" fill="#22c55e"/>
+  <circle cx="105" cy="75" r="4" fill="#7c3aed"/>
+
+  <!-- Enterprise display panel -->
+  <rect x="120" y="65" width="80" height="20" rx="2" fill="#000000" stroke="#374151" stroke-width="1"/>
+  <text x="160" y="78" text-anchor="middle" fill="#22c55e" font-family="monospace" font-size="10" font-weight="bold">H100 x2</text>
+
+  <!-- Power button -->
+  <circle cx="350" cy="75" r="10" fill="#374151" stroke="#7c3aed" stroke-width="2"/>
+  <circle cx="350" cy="75" r="6" fill="#22c55e"/>
+
+  <!-- Drive bays array (enterprise storage) -->
+  <g>
+    <!-- Row 1 -->
+    <rect x="30" y="100" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <rect x="70" y="100" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <rect x="110" y="100" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <rect x="150" y="100" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <rect x="190" y="100" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <rect x="230" y="100" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <rect x="270" y="100" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <rect x="310" y="100" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+
+    <!-- Row 2 -->
+    <rect x="30" y="125" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <rect x="70" y="125" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <rect x="110" y="125" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <rect x="150" y="125" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <rect x="190" y="125" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <rect x="230" y="125" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <rect x="270" y="125" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <rect x="310" y="125" width="30" height="18" rx="2" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+  </g>
+
+  <!-- First H100 GPU card (enterprise grade) -->
+  <rect x="40" y="160" width="150" height="35" rx="4" fill="url(#enterpriseGradient)" stroke="#5b21b6" stroke-width="2"/>
+  <text x="115" y="180" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold">H100 80GB</text>
+
+  <!-- Second H100 GPU card -->
+  <rect x="210" y="160" width="150" height="35" rx="4" fill="url(#enterpriseGradient)" stroke="#5b21b6" stroke-width="2"/>
+  <text x="285" y="180" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold">H100 80GB</text>
+
+  <!-- High-speed interconnects -->
+  <rect x="35" y="200" width="12" height="20" rx="2" fill="url(#goldGradient)"/>
+  <rect x="51" y="200" width="12" height="20" rx="2" fill="url(#goldGradient)"/>
+  <rect x="67" y="200" width="12" height="20" rx="2" fill="url(#goldGradient)"/>
+  <rect x="205" y="200" width="12" height="20" rx="2" fill="url(#goldGradient)"/>
+  <rect x="221" y="200" width="12" height="20" rx="2" fill="url(#goldGradient)"/>
+  <rect x="237" y="200" width="12" height="20" rx="2" fill="url(#goldGradient)"/>
+
+  <!-- NVLink bridge -->
+  <rect x="190" y="170" width="20" height="15" rx="2" fill="url(#goldGradient)" stroke="#f59e0b" stroke-width="1"/>
+  <text x="200" y="180" text-anchor="middle" fill="#000" font-family="Arial, sans-serif" font-size="8" font-weight="bold">NV</text>
+
+  <!-- Enterprise cooling -->
+  <g stroke="#4b5563" stroke-width="2" opacity="0.8">
+    <line x1="290" y1="65" x2="290" y2="85"/>
+    <line x1="300" y1="65" x2="300" y2="85"/>
+    <line x1="310" y1="65" x2="310" y2="85"/>
+    <line x1="320" y1="65" x2="320" y2="85"/>
+    <line x1="330" y1="65" x2="330" y2="85"/>
+  </g>
+
+  <!-- Professional grade badge -->
+  <rect x="280" y="100" width="90" height="55" rx="8" fill="url(#accentGradient)" stroke="#0891b2" stroke-width="2"/>
+  <text x="325" y="118" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">ENTERPRISE</text>
+  <text x="325" y="133" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">GRADE</text>
+  <text x="325" y="148" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10">160GB TOTAL</text>
+
+  <!-- Server model label -->
+  <text x="200" y="270" text-anchor="middle" fill="#0f172a" font-family="Inter, sans-serif" font-size="18" font-weight="600">Pro Server</text>
+  <text x="200" y="290" text-anchor="middle" fill="#64748b" font-family="Inter, sans-serif" font-size="14">2x H100 • 160GB Enterprise VRAM</text>
+</svg>

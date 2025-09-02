@@ -14,9 +14,30 @@ fn api_base() -> String {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
+struct PackageImage {
+    filename: String,
+    title: String,
+    description: String,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+enum Availability {
+    Preorder,
+    InStock,
+    Build { hours: u16 },
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+enum Provenance {
+    New,
+    Used { hours: u32 },
+}
+
+#[derive(Clone, Serialize, Deserialize)]
 struct Package {
     id: String,
     name: String,
+    sku: String,
     description: String,
     hardware_description: String,
     cpu_cores: u16,
@@ -27,6 +48,9 @@ struct Package {
     vram_gb: u16,
     setup_price_usdc: u32,
     monthly_price_usdc: u32,
+    images: Vec<PackageImage>,
+    availability: Availability,
+    provenance: Provenance,
 }
 
 #[component]
@@ -142,6 +166,39 @@ fn Landing() -> impl IntoView {
                                                     </div>
                                                 </div>
 
+                                                <div class="package-availability">
+                                                    <div class="availability-item">
+                                                        <span class="availability-icon">
+                                                            {match &pkg.availability {
+                                                                Availability::InStock => "✅",
+                                                                Availability::Preorder => "📋",
+                                                                Availability::Build { .. } => "🔧",
+                                                            }}
+                                                        </span>
+                                                        <span>
+                                                            {match &pkg.availability {
+                                                                Availability::InStock => "In Stock".to_string(),
+                                                                Availability::Preorder => "Preorder".to_string(),
+                                                                Availability::Build { hours } => format!("{}h Build", hours),
+                                                            }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="provenance-item">
+                                                        <span class="provenance-icon">
+                                                            {match &pkg.provenance {
+                                                                Provenance::New => "🆕",
+                                                                Provenance::Used { .. } => "♻️",
+                                                            }}
+                                                        </span>
+                                                        <span>
+                                                            {match &pkg.provenance {
+                                                                Provenance::New => "New".to_string(),
+                                                                Provenance::Used { hours } => format!("Used ({}h)", hours),
+                                                            }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
                                                 <div class="package-specs">
                                                     <div class="spec-item">
                                                         <span class="spec-icon">"🧠"</span>
@@ -180,9 +237,9 @@ fn Landing() -> impl IntoView {
                                                     </ul>
                                                 </div>
 
-                                                <button class="cta-button" class:primary=is_popular>
+                                                <A href={format!("/package/{}", pkg.sku)} class="cta-button">
                                                     "Deploy Now →"
-                                                </button>
+                                                </A>
                                             </div>
                                         }.into_view()
                                     }).collect::<Vec<_>>().into_view()
@@ -259,7 +316,7 @@ fn Landing() -> impl IntoView {
 
             @media (prefers-color-scheme: dark) {
                 .landing-container {
-                    background: linear-gradient(135deg, var(--qp-surface-dark) 0%, #1a1a2e 100%);
+                    background: linear-gradient(135deg, var(--qp-surface-dark) 0%, var(--qp-surface-dark) 100%);
                     color: var(--qp-text-dark);
                 }
             }
@@ -378,9 +435,9 @@ fn Landing() -> impl IntoView {
                 position: absolute;
                 width: 120px;
                 height: 80px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, var(--qp-cyan) 0%, var(--qp-ink) 100%);
                 border-radius: 8px;
-                box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+                box-shadow: 0 8px 32px rgba(6, 182, 212, 0.3);
                 animation: float 6s ease-in-out infinite;
             }
 
@@ -416,14 +473,19 @@ fn Landing() -> impl IntoView {
                 font-size: 2.5rem;
                 font-weight: 700;
                 margin-bottom: 1rem;
+                color: var(--qp-text-dark);
+                text-align: center;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             }
 
             .section-subtitle {
                 font-size: 1.125rem;
-                color: #b0b0b0;
+                color: var(--qp-text-dark);
+                opacity: 0.9;
                 max-width: 600px;
                 margin: 0 auto;
                 line-height: 1.6;
+                text-align: center;
             }
 
             .packages-grid {
@@ -434,23 +496,24 @@ fn Landing() -> impl IntoView {
             }
 
             .package-card {
-                background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
-                border: 1px solid #333;
+                background: var(--qp-surface-dark);
+                border: 1px solid rgba(226, 232, 240, 0.2);
                 border-radius: 16px;
                 padding: 2rem;
                 position: relative;
                 transition: all 0.3s ease;
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                color: var(--qp-text-dark);
             }
 
             .package-card:hover {
                 transform: translateY(-4px);
-                box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
-                border-color: #667eea;
+                box-shadow: 0 12px 40px rgba(6, 182, 212, 0.2);
+                border-color: var(--qp-cyan);
             }
 
             .package-card.popular {
-                border: 2px solid #667eea;
+                border: 2px solid var(--qp-cyan);
                 transform: scale(1.05);
             }
 
@@ -459,7 +522,7 @@ fn Landing() -> impl IntoView {
                 top: -12px;
                 left: 50%;
                 transform: translateX(-50%);
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: var(--qp-cyan);
                 color: white;
                 padding: 0.5rem 1.5rem;
                 border-radius: 50px;
@@ -476,26 +539,32 @@ fn Landing() -> impl IntoView {
                 font-weight: 700;
                 margin-bottom: 0.5rem;
                 color: var(--qp-cyan);
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
             }
 
             .package-description {
-                color: #b0b0b0;
+                color: var(--qp-text-dark);
+                opacity: 0.9;
                 line-height: 1.5;
             }
 
             .package-pricing {
                 margin-bottom: 2rem;
                 padding: 1.5rem;
-                background: rgba(6, 182, 212, 0.1);
+                background: rgba(6, 182, 212, 0.15);
                 border-radius: 12px;
-                border: 1px solid rgba(6, 182, 212, 0.2);
+                border: 2px solid var(--qp-cyan);
+                box-shadow: 0 2px 8px rgba(6, 182, 212, 0.2);
             }
 
             .price-setup, .price-monthly {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 0.75rem;
+                margin-bottom: 1rem;
+                padding: 0.5rem;
+                background: rgba(15, 23, 42, 0.3);
+                border-radius: 0.5rem;
             }
 
             .price-monthly {
@@ -505,8 +574,9 @@ fn Landing() -> impl IntoView {
             }
 
             .price-label {
+                color: var(--qp-text-dark);
+                opacity: 0.8;
                 font-size: 0.875rem;
-                color: #b0b0b0;
             }
 
             .price-amount {
@@ -517,6 +587,8 @@ fn Landing() -> impl IntoView {
             .price-amount.primary {
                 color: var(--qp-cyan);
                 font-size: 1.5rem;
+                font-weight: 800;
+                text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
             }
 
             .package-specs {
@@ -529,16 +601,26 @@ fn Landing() -> impl IntoView {
                 gap: 0.75rem;
                 margin-bottom: 0.75rem;
                 font-size: 0.95rem;
+                padding: 0.5rem;
+                background: rgba(6, 182, 212, 0.1);
+                border-radius: 0.375rem;
+                color: var(--qp-text-dark);
+                border: 1px solid rgba(6, 182, 212, 0.2);
             }
 
             .spec-icon {
                 font-size: 1.25rem;
                 width: 24px;
                 text-align: center;
+                flex-shrink: 0;
             }
 
             .hardware-details, .package-includes {
                 margin-bottom: 2rem;
+                padding: 1rem;
+                background: rgba(15, 23, 42, 0.03);
+                border-radius: 0.5rem;
+                border-left: 3px solid var(--qp-cyan);
             }
 
             .hardware-details h4, .package-includes h4 {
@@ -549,9 +631,11 @@ fn Landing() -> impl IntoView {
             }
 
             .hardware-details p {
-                color: #b0b0b0;
+                color: var(--qp-text-dark);
+                opacity: 0.9;
                 font-size: 0.9rem;
                 line-height: 1.5;
+                margin: 0;
             }
 
             .package-includes ul {
@@ -563,15 +647,19 @@ fn Landing() -> impl IntoView {
             .package-includes li {
                 font-size: 0.9rem;
                 margin-bottom: 0.5rem;
-                color: #b0b0b0;
+                color: var(--qp-text-dark);
+                opacity: 0.9;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
             }
 
             .cta-button {
                 width: 100%;
                 padding: 1rem 2rem;
-                background: var(--qp-ink);
+                background: var(--qp-cyan);
                 color: white;
-                border: 2px solid var(--qp-ink);
+                border: 2px solid var(--qp-cyan);
                 border-radius: 8px;
                 font-size: 1rem;
                 font-weight: 600;
@@ -580,13 +668,41 @@ fn Landing() -> impl IntoView {
                 text-decoration: none;
                 display: inline-block;
                 text-align: center;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
 
             @media (prefers-color-scheme: dark) {
                 .cta-button {
-                    background: var(--qp-ink-100);
-                    color: var(--qp-ink);
-                    border-color: var(--qp-ink-100);
+                    background: var(--qp-cyan);
+                    color: var(--qp-surface-dark);
+                    border-color: var(--qp-cyan);
+                    font-weight: 700;
+                }
+
+                .cta-button:hover {
+                    background: #0891b2;
+                    color: white;
+                }
+
+                .spec-item {
+                    background: rgba(6, 182, 212, 0.1);
+                    color: var(--qp-text-dark);
+                }
+
+                .hardware-details, .package-includes {
+                    background: rgba(226, 232, 240, 0.05);
+                }
+
+                .hardware-details p, .package-includes li {
+                    color: var(--qp-text-dark);
+                }
+
+                .section-title {
+                    color: var(--qp-text-dark);
+                }
+
+                .section-subtitle {
+                    color: var(--qp-text-dark);
                 }
             }
 
@@ -601,8 +717,9 @@ fn Landing() -> impl IntoView {
             }
 
             .cta-button.primary:hover {
-                background: #0891b2;
-                border-color: #0891b2;
+                background: var(--qp-cyan);
+                opacity: 0.9;
+                border-color: var(--qp-cyan);
             }
 
             .cta-button.large {
@@ -612,7 +729,7 @@ fn Landing() -> impl IntoView {
 
             .security-section {
                 padding: 6rem 2rem;
-                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                background: var(--qp-surface-dark);
             }
 
             .security-content {
@@ -651,7 +768,8 @@ fn Landing() -> impl IntoView {
             }
 
             .security-item p {
-                color: #b0b0b0;
+                color: var(--qp-text-dark);
+                opacity: 0.8;
                 line-height: 1.6;
             }
 
@@ -670,7 +788,8 @@ fn Landing() -> impl IntoView {
 
             .final-cta p {
                 font-size: 1.125rem;
-                color: #b0b0b0;
+                color: var(--qp-text);
+                opacity: 0.7;
                 margin-bottom: 3rem;
                 line-height: 1.6;
             }
@@ -685,7 +804,7 @@ fn Landing() -> impl IntoView {
             @media (prefers-color-scheme: dark) {
                 .footer {
                     background: var(--qp-surface-dark);
-                    border-top-color: #333;
+                    border-top-color: var(--qp-ink-100);
                 }
             }
 
@@ -741,7 +860,7 @@ fn Landing() -> impl IntoView {
 
             @media (prefers-color-scheme: dark) {
                 .spinner {
-                    border-color: #333;
+                    border-color: var(--qp-ink-100);
                     border-top-color: var(--qp-cyan);
                 }
             }
@@ -812,17 +931,17 @@ fn Signup() -> impl IntoView {
     };
 
     view! {
-        <div style="max-width:480px;margin:2rem auto;padding:2rem;background:#1e1e2e;border-radius:16px;">
+        <div style="max-width:480px;margin:2rem auto;padding:2rem;background:var(--qp-surface);border:1px solid var(--qp-ink-100);border-radius:16px;">
             <h2>"Create your account"</h2>
             <input
                 placeholder="Email"
-                style="width:100%;padding:1rem;margin:1rem 0;border:1px solid #333;border-radius:8px;background:#2a2a3e;color:white;"
+                style="width:100%;padding:1rem;margin:1rem 0;border:1px solid var(--qp-ink-100);border-radius:8px;background:var(--qp-surface);color:var(--qp-text);"
                 on:input=move |e| set_email.set(event_target_value(&e))
             />
             <input
                 type="password"
                 placeholder="Password"
-                style="width:100%;padding:1rem;margin:1rem 0;border:1px solid #333;border-radius:8px;background:#2a2a3e;color:white;"
+                style="width:100%;padding:1rem;margin:1rem 0;border:1px solid var(--qp-ink-100);border-radius:8px;background:var(--qp-surface);color:var(--qp-text);"
                 on:input=move |e| set_password.set(event_target_value(&e))
             />
             <button
@@ -838,6 +957,217 @@ fn Signup() -> impl IntoView {
 }
 
 #[component]
+fn PackageDetail() -> impl IntoView {
+    let params = use_params_map();
+    let sku = move || params.with(|params| params.get("sku").cloned().unwrap_or_default());
+
+    let package_resource = create_resource(sku, |sku| async move {
+        if sku.is_empty() {
+            return None;
+        }
+        let url = format!("{}/api/packages/{}", api_base(), sku);
+        let resp = gloo_net::http::Request::get(&url).send().await;
+        match resp {
+            Ok(r) if r.status() == 200 => r.json::<Package>().await.ok(),
+            _ => None,
+        }
+    });
+
+    view! {
+        <div class="package-detail-container">
+            <Suspense fallback=move || view! {
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>"Loading package details..."</p>
+                </div>
+            }>
+                {move || {
+                    package_resource.get().map(|pkg_opt| match pkg_opt {
+                        Some(pkg) => {
+                            let availability_text = match &pkg.availability {
+                                Availability::InStock => "In Stock - Ships within 24 hours".to_string(),
+                                Availability::Preorder => "Preorder - Ships when available".to_string(),
+                                Availability::Build { hours } => format!("Custom Build - {} hour delivery", hours),
+                            };
+
+                            let provenance_text = match &pkg.provenance {
+                                Provenance::New => "Brand New Hardware".to_string(),
+                                Provenance::Used { hours } => format!("Refurbished - {} hours previous usage", hours),
+                            };
+
+                            let payment_policy = match &pkg.availability {
+                                Availability::InStock | Availability::Build { .. } =>
+                                    "Full payment required at time of order".to_string(),
+                                Availability::Preorder =>
+                                    "5% deposit on order, balance due when order confirmation and proforma invoice is issued, preceding build".to_string(),
+                            };
+
+                            view! {
+                                <div class="package-detail">
+                                    <div class="package-header">
+                                        <h1 class="package-title">{pkg.name.clone()}</h1>
+                                        <div class="package-sku">SKU: {pkg.sku.clone()}</div>
+                                    </div>
+
+                                    <div class="package-content">
+                                        <div class="package-images">
+                                            {
+                                                // Use fallback images if no images or placeholder URLs
+                                                let display_images = if pkg.images.is_empty() || pkg.images.iter().any(|img| img.filename.contains("placehold.co")) {
+                                                    match pkg.sku.as_str() {
+                                                        "1x-a8060-96" => vec![
+                                                            PackageImage {
+                                                                filename: "/packages/1x-a8060-96-hero.svg".to_string(),
+                                                                title: "AMD A8060 Server".to_string(),
+                                                                description: "Professional AI compute server with 96GB HBM3e memory".to_string(),
+                                                            },
+                                                            PackageImage {
+                                                                filename: "/packages/1x-a8060-96-specs.svg".to_string(),
+                                                                title: "Technical Specifications".to_string(),
+                                                                description: "Detailed hardware specifications and performance metrics".to_string(),
+                                                            }
+                                                        ],
+                                                        "2x-n5090-64" => vec![
+                                                            PackageImage {
+                                                                filename: "/packages/2x-n5090-64-hero.svg".to_string(),
+                                                                title: "Dual N5090 Configuration".to_string(),
+                                                                description: "High-performance dual GPU setup with 64GB total VRAM".to_string(),
+                                                            },
+                                                            PackageImage {
+                                                                filename: "/packages/2x-n5090-64-specs.svg".to_string(),
+                                                                title: "Dual GPU Specifications".to_string(),
+                                                                description: "Complete technical specifications for the dual N5090 setup".to_string(),
+                                                            }
+                                                        ],
+                                                        "2x-h100-160" => vec![
+                                                            PackageImage {
+                                                                filename: "/packages/2x-h100-160-hero.svg".to_string(),
+                                                                title: "Enterprise H100 Server".to_string(),
+                                                                description: "Enterprise-grade dual H100 configuration for AI training".to_string(),
+                                                            },
+                                                            PackageImage {
+                                                                filename: "/packages/2x-h100-160-specs.svg".to_string(),
+                                                                title: "Enterprise Specifications".to_string(),
+                                                                description: "Complete enterprise hardware specifications and capabilities".to_string(),
+                                                            }
+                                                        ],
+                                                        _ => pkg.images.clone()
+                                                    }
+                                                } else {
+                                                    pkg.images.clone()
+                                                };
+
+                                                display_images.iter().map(|img| {
+                                                    view! {
+                                                        <div class="package-image">
+                                                            <img src={img.filename.clone()} alt={img.title.clone()} />
+                                                            <div class="image-info">
+                                                                <h3>{img.title.clone()}</h3>
+                                                                <p>{img.description.clone()}</p>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }).collect_view()
+                                            }
+                                        </div>
+
+                                        <div class="package-info">
+                                            <div class="package-description">
+                                                <h2>"Description"</h2>
+                                                <p>{pkg.description.clone()}</p>
+                                            </div>
+
+                                            <div class="package-specs">
+                                                <h2>"Technical Specifications"</h2>
+                                                <div class="spec-grid">
+                                                    <div class="spec-item">
+                                                        <span class="spec-label">"CPU Cores"</span>
+                                                        <span class="spec-value">{pkg.cpu_cores}</span>
+                                                    </div>
+                                                    <div class="spec-item">
+                                                        <span class="spec-label">"RAM"</span>
+                                                        <span class="spec-value">{pkg.ram_gb}" GB"</span>
+                                                    </div>
+                                                    <div class="spec-item">
+                                                        <span class="spec-label">"Storage"</span>
+                                                        <span class="spec-value">{pkg.storage_gb}" GB"</span>
+                                                    </div>
+                                                    <div class="spec-item">
+                                                        <span class="spec-label">"GPU"</span>
+                                                        <span class="spec-value">{format!("{:?}", pkg.gpu_class)}</span>
+                                                    </div>
+                                                    <div class="spec-item">
+                                                        <span class="spec-label">"GPU Count"</span>
+                                                        <span class="spec-value">{pkg.gpu_count}</span>
+                                                    </div>
+                                                    <div class="spec-item">
+                                                        <span class="spec-label">"VRAM"</span>
+                                                        <span class="spec-value">{pkg.vram_gb}" GB"</span>
+                                                    </div>
+                                                </div>
+                                                <div class="hardware-description">
+                                                    <h3>"Hardware Details"</h3>
+                                                    <p>{pkg.hardware_description.clone()}</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="package-availability">
+                                                <h2>"Availability & Delivery"</h2>
+                                                <div class="availability-info">
+                                                    <div class="availability-status">{availability_text}</div>
+                                                    <div class="provenance-info">{provenance_text}</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="package-pricing">
+                                                <h2>"Pricing"</h2>
+                                                <div class="pricing-details">
+                                                    <div class="price-item">
+                                                        <span class="price-label">"Hardware & Setup"</span>
+                                                        <span class="price-amount">"$"{pkg.setup_price_usdc}" USDC"</span>
+                                                    </div>
+                                                    <div class="price-item">
+                                                        <span class="price-label">"Monthly Hosting"</span>
+                                                        <span class="price-amount">"$"{pkg.monthly_price_usdc}" USDC/mo"</span>
+                                                    </div>
+                                                </div>
+                                                <div class="payment-policy">
+                                                    <h3>"Payment Policy"</h3>
+                                                    <p>{payment_policy}</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="package-actions">
+                                                <A href="/signup" class="package-cta primary">
+                                                    "Deploy Now"
+                                                </A>
+                                                <A href="mailto:hello@qapi.sh" class="package-cta secondary">
+                                                    "Contact Sales"
+                                                </A>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="package-footer">
+                                        <A href="/" class="back-link">"← Back to Packages"</A>
+                                    </div>
+                                </div>
+                            }.into_view()
+                        },
+                        None => view! {
+                            <div class="package-not-found">
+                                <h1>"Package Not Found"</h1>
+                                <p>"The requested package could not be found."</p>
+                                <A href="/" class="cta-button primary">"Browse All Packages"</A>
+                            </div>
+                        }.into_view()
+                    })
+                }}
+            </Suspense>
+        </div>
+    }
+}
+
 fn Dashboard() -> impl IntoView {
     use serde::{Deserialize, Serialize};
 
@@ -905,6 +1235,7 @@ fn App() -> impl IntoView {
                         <Route path="/" view=Landing />
                         <Route path="/signup" view=Signup />
                         <Route path="/dashboard" view=Dashboard />
+                        <Route path="/package/:sku" view=PackageDetail />
                     </Routes>
                 </main>
             </Router>

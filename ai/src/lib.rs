@@ -14,9 +14,30 @@ pub enum GpuClass {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PackageImage {
+    pub filename: String,
+    pub title: String,
+    pub description: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum Availability {
+    Preorder,
+    InStock,
+    Build { hours: u16 },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum Provenance {
+    New,
+    Used { hours: u32 },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Package {
     pub id: Uuid,
     pub name: String,
+    pub sku: String,
     pub description: String,
     pub hardware_description: String,
     pub cpu_cores: u16,
@@ -27,6 +48,9 @@ pub struct Package {
     pub vram_gb: u16,
     pub setup_price_usdc: u32,
     pub monthly_price_usdc: u32,
+    pub images: Vec<PackageImage>,
+    pub availability: Availability,
+    pub provenance: Provenance,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

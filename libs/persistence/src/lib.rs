@@ -9,6 +9,7 @@ use uuid::Uuid;
 pub struct Package {
     pub id: Uuid,
     pub name: String,
+    pub sku: Option<String>,
     pub description: String,
     pub hardware_description: String,
     pub cpu_cores: i16,
@@ -19,6 +20,10 @@ pub struct Package {
     pub vram_gb: i16,
     pub setup_price_usdc: i32,
     pub monthly_price_usdc: i32,
+    pub availability_type: String,
+    pub availability_value: Option<i32>,
+    pub provenance_type: String,
+    pub provenance_value: Option<i32>,
     pub is_active: bool,
     pub created_at: DateTime<Utc>,
 }
@@ -67,9 +72,10 @@ impl Database {
         let rows = sqlx::query(
             r#"
             SELECT
-                id, name, description, hardware_description,
+                id, name, sku, description, hardware_description,
                 cpu_cores, ram_gb, storage_gb, gpu_class,
                 gpu_count, vram_gb, setup_price_usdc, monthly_price_usdc,
+                availability_type, availability_value, provenance_type, provenance_value,
                 is_active, created_at
             FROM packages
             WHERE is_active = true
@@ -84,6 +90,7 @@ impl Database {
             .map(|row| Package {
                 id: row.get("id"),
                 name: row.get("name"),
+                sku: row.get("sku"),
                 description: row.get("description"),
                 hardware_description: row.get("hardware_description"),
                 cpu_cores: row.get("cpu_cores"),
@@ -94,6 +101,10 @@ impl Database {
                 vram_gb: row.get("vram_gb"),
                 setup_price_usdc: row.get("setup_price_usdc"),
                 monthly_price_usdc: row.get("monthly_price_usdc"),
+                availability_type: row.get("availability_type"),
+                availability_value: row.get("availability_value"),
+                provenance_type: row.get("provenance_type"),
+                provenance_value: row.get("provenance_value"),
                 is_active: row.get("is_active"),
                 created_at: row.get("created_at"),
             })
@@ -106,9 +117,10 @@ impl Database {
         let row = sqlx::query(
             r#"
             SELECT
-                id, name, description, hardware_description,
+                id, name, sku, description, hardware_description,
                 cpu_cores, ram_gb, storage_gb, gpu_class,
                 gpu_count, vram_gb, setup_price_usdc, monthly_price_usdc,
+                availability_type, availability_value, provenance_type, provenance_value,
                 is_active, created_at
             FROM packages
             WHERE id = $1 AND is_active = true
@@ -121,6 +133,7 @@ impl Database {
         let package = row.map(|r| Package {
             id: r.get("id"),
             name: r.get("name"),
+            sku: r.get("sku"),
             description: r.get("description"),
             hardware_description: r.get("hardware_description"),
             cpu_cores: r.get("cpu_cores"),
@@ -131,11 +144,87 @@ impl Database {
             vram_gb: r.get("vram_gb"),
             setup_price_usdc: r.get("setup_price_usdc"),
             monthly_price_usdc: r.get("monthly_price_usdc"),
+            availability_type: r.get("availability_type"),
+            availability_value: r.get("availability_value"),
+            provenance_type: r.get("provenance_type"),
+            provenance_value: r.get("provenance_value"),
             is_active: r.get("is_active"),
             created_at: r.get("created_at"),
         });
 
         Ok(package)
+    }
+
+    pub async fn get_package_by_sku(&self, sku: &str) -> Result<Option<Package>> {
+        let row = sqlx::query(
+            r#"
+            SELECT
+                id, name, sku, description, hardware_description,
+                cpu_cores, ram_gb, storage_gb, gpu_class,
+                gpu_count, vram_gb, setup_price_usdc, monthly_price_usdc,
+                availability_type, availability_value, provenance_type, provenance_value,
+                is_active, created_at
+            FROM packages
+            WHERE sku = $1 AND is_active = true
+            "#,
+        )
+        .bind(sku)
+        .fetch_optional(&self.pool)
+        .await?;
+
+        let package = row.map(|r| Package {
+            id: r.get("id"),
+            name: r.get("name"),
+            sku: r.get("sku"),
+            description: r.get("description"),
+            hardware_description: r.get("hardware_description"),
+            cpu_cores: r.get("cpu_cores"),
+            ram_gb: r.get("ram_gb"),
+            storage_gb: r.get("storage_gb"),
+            gpu_class: r.get("gpu_class"),
+            gpu_count: r.get("gpu_count"),
+            vram_gb: r.get("vram_gb"),
+            setup_price_usdc: r.get("setup_price_usdc"),
+            monthly_price_usdc: r.get("monthly_price_usdc"),
+            availability_type: r.get("availability_type"),
+            availability_value: r.get("availability_value"),
+            provenance_type: r.get("provenance_type"),
+            provenance_value: r.get("provenance_value"),
+            is_active: r.get("is_active"),
+            created_at: r.get("created_at"),
+        });
+
+        Ok(package)
+    }
+
+    pub async fn get_package_images(
+        &self,
+        package_id: Uuid,
+    ) -> Result<Vec<(String, String, String)>> {
+        let rows = sqlx::query(
+            r#"
+            SELECT filename, title, description
+            FROM package_images
+            WHERE package_id = $1
+            ORDER BY sort_order ASC
+            "#,
+        )
+        .bind(package_id)
+        .fetch_all(&self.pool)
+        .await?;
+
+        let images = rows
+            .into_iter()
+            .map(|row| {
+                (
+                    row.get::<String, _>("filename"),
+                    row.get::<String, _>("title"),
+                    row.get::<String, _>("description"),
+                )
+            })
+            .collect();
+
+        Ok(images)
     }
 
     pub async fn create_server_order(

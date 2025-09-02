@@ -1,4 +1,5 @@
 use ai::*;
+use axum::extract::Path;
 use axum::{
     extract::State,
     http::{HeaderValue, Method, StatusCode},
@@ -44,6 +45,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/auth/signup", post(signup))
         .route("/api/auth/login", post(login))
         .route("/api/packages", get(list_packages))
+        .route("/api/packages/:sku", get(get_package_by_sku))
         .route("/api/orders", get(list_orders).post(create_order))
         .with_state(state)
         .layer(cors)
@@ -108,6 +110,17 @@ async fn list_packages(
         .await
         .map(Json)
         .map_err(internal_err)
+}
+
+async fn get_package_by_sku(
+    State(state): State<AppState>,
+    Path(sku): Path<String>,
+) -> Result<Json<Package>, (StatusCode, String)> {
+    match state.infra.get_package_by_sku(&sku).await {
+        Ok(Some(package)) => Ok(Json(package)),
+        Ok(None) => Err((StatusCode::NOT_FOUND, "Package not found".to_string())),
+        Err(e) => Err(internal_err(e)),
+    }
 }
 
 fn internal_err(e: anyhow::Error) -> (StatusCode, String) {
