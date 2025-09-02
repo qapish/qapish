@@ -135,30 +135,7 @@ qapish/
 └── README.md
 ```
 
-## 📦 AI Colocation Packages
 
-### Midrange Consumer - $3,000 setup + $200/mo USDC
-- **Hardware**: GMKtek X2 (or similar) with integrated GPU and shared system RAM
-- **Specs**: 16 cores, 64GB RAM, 2TB NVMe, integrated graphics
-- **Perfect for**: Development and small-scale inference workloads
-
-### Top Consumer - $20,000 setup + $500/mo USDC  
-- **Hardware**: Ryzen 9950, 64GB RAM, dual 32GB RTX 5090s, liquid cooling
-- **Specs**: 16 cores, 64GB RAM, 4TB NVMe, 2x RTX 5090
-- **Perfect for**: High-performance demanding AI applications
-
-### Pro Server - $100,000 setup + $1,000/mo USDC
-- **Hardware**: Dual H100 80GB with enterprise cooling and redundancy
-- **Specs**: 32 cores, 128GB RAM, 8TB NVMe, 2x H100 80GB
-- **Perfect for**: Enterprise-grade AI infrastructure for production workloads
-
-All packages include:
-- ✅ Custom inference engine (vLLM/TGI/Ollama)
-- ✅ Pre-configured & tested LLMs
-- ✅ Dynamic model loading
-- ✅ 24/7 monitoring & support
-- ✅ Post-quantum encryption
-- ✅ Secure Balkan datacenter
 
 ## 🔐 Security Features
 

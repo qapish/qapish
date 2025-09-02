@@ -10,6 +10,7 @@ pub enum GpuClass {
     H100_80G,
     RTX_4090,
     RTX_5090,
+    Radeon_8060S,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

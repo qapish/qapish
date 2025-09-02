@@ -33,6 +33,7 @@ impl Package {
             "H100_80G" => GpuClass::H100_80G,
             "RTX_4090" => GpuClass::RTX_4090,
             "RTX_5090" => GpuClass::RTX_5090,
+            "Radeon_8060S" => GpuClass::Radeon_8060S,
             _ => GpuClass::None,
         }
     }

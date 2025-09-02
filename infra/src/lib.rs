@@ -45,13 +45,15 @@ impl InfraState {
                     name: "Midrange Consumer".to_string(),
                     description: "Perfect for development and small-scale inference workloads"
                         .to_string(),
-                    hardware_description: "GMKtek X2 (or similar) with integrated GPU and shared system RAM".to_string(),
+                    hardware_description:
+                        "GMKtek X2 (or similar) with AMD Radeon 8060S 96GB and 32GB system RAM"
+                            .to_string(),
                     cpu_cores: 16,
-                    ram_gb: 64,
+                    ram_gb: 32,
                     storage_gb: 2000,
-                    gpu_class: GpuClass::None,
-                    gpu_count: 0,
-                    vram_gb: 0,
+                    gpu_class: GpuClass::Radeon_8060S,
+                    gpu_count: 1,
+                    vram_gb: 96,
                     setup_price_usdc: 3000,
                     monthly_price_usdc: 200,
                 },
@@ -164,6 +166,7 @@ impl InfraState {
                     "H100_80G" => GpuClass::H100_80G,
                     "RTX_4090" => GpuClass::RTX_4090,
                     "RTX_5090" => GpuClass::RTX_5090,
+                    "Radeon_8060S" => GpuClass::Radeon_8060S,
                     _ => GpuClass::None,
                 };
 
