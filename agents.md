@@ -146,3 +146,71 @@ This document tells human and AI contributors how to work inside this repo.
   - ❌ `// In 2021 we tried Nginx and it was a mess, so now…`
   - ❌ `// I prefer this pattern because it feels cleaner`
 - **Architecture/design notes:** put ADR-style writeups in `.docs/*.md` if truly necessary. The code should remain clean and free of long-form explanations.
+
+
+## Privilege & Debugging Policy (No `sudo`)
+
+- **Absolutely no `sudo` in debugging or agent runs.** Agentic debuggers/tools must **not** attempt to execute any command requiring elevated privileges on the workstation.
+- **Do not auto-elevate.** No `sudo`, no `pkexec`, no `su`, no setuid helpers, no prompts for passwords. If a task *would* need root, stop and propose a rootless alternative.
+- **Write scripts to be rootless by default.**
+  - Provide `--dry-run` and `--print` modes that show intended actions without executing them.
+  - If privileged steps are unavoidable, **fail fast** with a clear message (e.g., “requires root; provide a rootless equivalent or run on a CI/ops host”).
+  - Detect privilege safely and exit:
+    ```bash
+    if [ "${EUID:-$(id -u)}" -ne 0 ]; then
+      echo "This step requires root. Exiting per policy."; exit 1
+    fi
+    ```
+- **Use rootless alternatives:**
+  - System services → `systemd --user` + Quadlet (rootless Podman).
+  - Containers → **rootless Podman** (`podman` only, never Docker).
+  - Networking/ports → high ports (≥1024) or reverse proxy front-ends rather than privileged binds.
+  - File ops → user-writable paths in `$HOME`, project workspace, or XDG dirs.
+- **Deployment & provisioning scripts:**
+  - Target CI/ops hosts or documented admin procedures—not developer workstations.
+  - Keep privileged instructions in `.docs/*.md` (gitignored) and mark them as **operator-only**.
+- **PRs will be rejected** if they contain agent workflows or scripts that attempt to run with elevated privileges on developer machines.
+
+
+## Clarification Policy (Ask Before You Assume)
+
+- **If guidance is incomplete, ambiguous, or self-contradictory, ask for clarification _before_ implementing.**
+- **Do not invent missing requirements** or proceed on major assumptions that can’t be trivially reversed.
+- **Surface uncertainties explicitly** and propose 1–2 reasonable options rather than guessing.
+
+### When to ask
+- Key details are missing (schemas, API contracts, error handling, auth model, deployment target).
+- Conflicting instructions (e.g., “SSR” vs “CSR”, or “no DB” but migrations requested).
+- Scope creep or unclear acceptance criteria.
+- Security, data retention, or privacy implications are unspecified.
+
+### How to ask (concise template)
+> **Clarification needed:** _brief summary of the gap_
+> **My default assumption if unblocked:** _Option A_
+> **Alternatives:** _Option B (tradeoff)_, _Option C (tradeoff)_
+> **Impact of choosing wrong:** _rollback complexity / risk_
+
+### Proceeding without a reply
+- If truly blocked, pause and request clarification.
+- If partially blocked, implement the **minimal, reversible** path and clearly mark TODOs with a short note to revisit.
+
+### Anti-patterns
+- Writing code that bakes in assumptions without review.
+- Long speculative commentary in code; keep rationale in the PR description or `.docs/*.md` if needed.
+
+
+## Build Quality (Must Compile; Prefer No Warnings)
+
+- **Completed contributions must compile** at the workspace root on **stable** Rust:
+  - `cargo build --workspace --all-targets --release` **succeeds**.
+  - The web crate also builds to WASM: `cd web && trunk build --release`.
+- **Prefer zero warnings.** Strive for a clean build. If a warning is truly unavoidable:
+  - Scope any `#[allow(...)]` as narrowly as possible and include a 1-line reason.
+  - Do **not** suppress warnings repo-wide to hide issues.
+- **Clippy & fmt (recommended):**
+  - `cargo clippy --workspace --all-targets -- -D warnings` (aim to pass)
+  - `cargo fmt --all --check`
+- **Tests (when present) must pass:** `cargo test --workspace -q`.
+- **Third-party warnings:** Tolerated if they originate in dependencies; **our code** should be warnings-free.
+- **CI:** Do not mark a PR “complete” if any required build/test job is red.
+- **Reproducibility:** No environment-specific hacks. Default features should build without local secrets or root privileges.
