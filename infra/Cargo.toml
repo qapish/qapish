@@ -6,6 +6,7 @@ edition = "2021"
 
 [dependencies]
 ai = { path = "../ai" }
+persistence = { path = "../libs/persistence" }
 anyhow.workspace = true
 tokio.workspace = true
 tracing.workspace = true

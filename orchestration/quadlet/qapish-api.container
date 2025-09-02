@@ -1,0 +1,56 @@
+[Unit]
+Description=Qapish AI Colocation API Server
+After=network-online.target qapish-postgres.service
+Wants=network-online.target
+Requires=qapish-postgres.service
+
+[Container]
+Image=localhost/qapish-api:latest
+ContainerName=qapish-api
+
+# Environment variables
+Environment=DATABASE_URL=postgresql://postgres:password@qapish-postgres:5432/qapish
+Environment=PORT=8080
+Environment=RUST_LOG=info
+EnvironmentFile=%h/.config/qapish/api.env
+
+# Network and ports
+PublishPort=8080:8080
+Network=pasta
+
+# Volume mounts (read-only where possible)
+Volume=%h/.config/qapish:/config:ro,Z
+
+# Security settings
+User=1000:1000
+NoNewPrivileges=true
+ReadOnlyRootFilesystem=true
+TmpFs=/tmp:rw,noexec,nosuid,nodev,size=100m
+
+# Capabilities (minimal required set)
+DropCapability=ALL
+
+# Health check
+HealthCmd=curl -f http://localhost:8080/api/health || exit 1
+HealthInterval=30s
+HealthTimeout=5s
+HealthRetries=3
+HealthStartPeriod=10s
+
+# Resource limits
+Memory=512m
+CPUQuota=50%
+
+# Logging
+LogDriver=journald
+LogOpt=tag=qapish-api
+
+[Service]
+Restart=always
+RestartSec=5
+TimeoutStartSec=60
+TimeoutStopSec=30
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target default.target

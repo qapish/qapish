@@ -83,3 +83,50 @@ This document tells human and AI contributors how to work inside this repo.
 - [ ] Leptonic components used for UI; no extra UI frameworks.
 - [ ] Tests or examples for new library surfaces.
 - [ ] If long-form explanation needed → **`.docs/*.md`**; not in code comments or PR body alone.
+
+## Containerization & Runtime Policy
+
+- **Runtime:** Rootless **Podman** only. **No Docker** anywhere (no `docker` CLI, no Docker Desktop, no docker-compose).
+- **Files:** Use `Containerfile` (Dockerfile syntax is fine). Do not add Docker-specific files or README snippets.
+- **Orchestration:** Prefer **Quadlet** for systemd integration. Keep unit files under `orchestration/quadlet/` and document runtime env in `.env.example` (if needed).
+- **Build & Push:** Use `podman build` / `podman push`. Example:
+  - `podman build -t <registry>/<org>/qapish-api:<tag> -f Containerfile .`
+  - `podman push <registry>/<org>/qapish-api:<tag>`
+- **Networking:** Default to rootless network (slirp4netns/pasta). Publish ports via Quadlet `PublishPort=` or `-p host:container`. Avoid `--net=host`.
+- **Security:** No `--privileged`. Avoid `--cap-add` unless strictly required; justify in the PR. Mount volumes read-only by default; least-privilege FS and env.
+- **Ports:** Prefer high host ports (≥1024). If low ports are needed, terminate TLS at the host or a reverse proxy and forward to the container.
+- **CI/CD:** Use Podman in pipelines. Do not add scripts/targets that assume `docker` exists (and do not alias `docker` → `podman` in repo scripts).
+- **Alternatives:** If a third-party provides Docker/Docker-Compose examples, translate them to Podman/Quadlet and store under `orchestration/quadlet/`. Any rationale belongs in `.docs/*.md`, not inline.
+
+
+## Dependency Versioning Policy
+
+- **Use the latest stable release** of any new dependency. No pre-releases (`-alpha`, `-beta`, `-rc`), no unreleased `git` refs, and no yanked/abandoned crates.
+- **SemVer constraints:**
+  - Prefer caret ranges that track the latest compatible **stable**:
+    - ✅ `leptos = "0.6"` (gets latest 0.6.x)
+    - ✅ `sqlx = "0.7"`
+  - Avoid pinning to exact patch versions unless required for a hotfix:
+    - 🚫 `leptos = "=0.6.4"` (too brittle)
+  - Avoid overly broad ranges or wildcards:
+    - 🚫 `leptos = "*"`, `>=0.6`
+- **Rust channel:** Everything must build on **stable** Rust (current toolchain). If a crate needs nightly/unstable features, pick a different crate or redesign.
+- **Crates.io only:** New deps must come from crates.io. No `git = "..."` unless there is a critical upstream fix **and** you open an issue to remove it. Document such exceptions in `.docs/deps-exceptions.md`.
+- **Feature hygiene:** Enable only the features you use. Prefer `rustls` over `native-tls` where applicable. Keep default features off when they drag in unnecessary deps.
+- **Validation checklist (required in PR description):**
+  - Ran `cargo update -p <new-dep>` and `cargo check` at workspace root.
+  - Verified `cargo test -q` (if tests exist) and `cd web && trunk build` (for WASM) succeed.
+  - Checked for duplicate/conflicting versions: `cargo tree -d`.
+  - No MSRV bumps beyond stable without prior approval.
+
+> Goal: avoid yak shaving and flaky builds. If you must deviate (pin exact version, use a fork, etc.), explain why in `.docs/deps-exceptions.md` and propose a path back to a normal stable crates.io release.
+
+
+## Platform & Packaging Policy (Fedora-first)
+
+- **OS baseline:** Fedora (Workstation/Server/CoreOS). This project develops and deploys on Fedora because it tracks recent ecosystem changes reliably (e.g., **liboqs** packaging) and stays easy to update via the system package manager.
+- **Package manager:** **dnf/rpm** only. **Do not** include `apt`, `apt-get`, `deb` packaging, or Ubuntu/Debian instructions in docs, scripts, or examples.
+- **Docs & scripts:** All setup guides, snippets, and automation **must** target Fedora with `dnf`/`rpm` (and `systemd`/`podman` where relevant). If upstream docs show `apt`, translate them to `dnf`. Do not leave mixed examples.
+- **Containers:** Base images should be Fedora/ubi/rpm-based. Avoid Debian/Ubuntu bases. Keep runtime parity with host expectations (rootless Podman).
+- **Repositories:** Prefer official Fedora repos; COPR is acceptable when necessary and should be documented clearly. Avoid `curl | bash` style installers; package or pin via rpm when possible.
+- **Exceptions:** None by default. If a dependency is temporarily unavailable on Fedora, open an issue proposing a Fedora-compatible path (COPR/spec, alternative crate, or vendoring) and document the temporary workaround in `.docs/*.md`. Do **not** merge `apt`/Debian instructions unless they are in addition or complimentary to comprehensive Fedora instructions.

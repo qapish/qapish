@@ -1,0 +1,42 @@
+[Unit]
+Description=Qapish PostgreSQL Database
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=docker.io/library/postgres:15
+ContainerName=qapish-postgres
+
+# Environment variables
+Environment=POSTGRES_DB=qapish
+Environment=POSTGRES_USER=postgres
+Environment=POSTGRES_PASSWORD=password
+
+# Network and ports
+PublishPort=5432:5432
+Network=pasta
+
+# Volume for persistence
+Volume=qapish-postgres-data:/var/lib/postgresql/data:Z
+
+# Security
+User=999:999
+NoNewPrivileges=true
+ReadOnlyRootFilesystem=false
+
+# Health check
+HealthCmd=pg_isready -U postgres -d qapish
+HealthInterval=30s
+HealthTimeout=5s
+HealthRetries=3
+
+# Logging
+LogDriver=journald
+
+[Service]
+Restart=always
+TimeoutStartSec=60
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target default.target

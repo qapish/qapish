@@ -23,8 +23,9 @@ async fn main() -> anyhow::Result<()> {
         .unwrap_or_else(|_| EnvFilter::new("info,tower_http=info"));
     tracing_subscriber::fmt().with_env_filter(filter).init();
 
+    let infra = InfraState::new().await?;
     let state = AppState {
-        infra: Arc::new(InfraState::new()),
+        infra: Arc::new(infra),
     };
 
     let cors = CorsLayer::new()
@@ -42,6 +43,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/health", get(health))
         .route("/api/auth/signup", post(signup))
         .route("/api/auth/login", post(login))
+        .route("/api/packages", get(list_packages))
         .route("/api/orders", get(list_orders).post(create_order))
         .with_state(state)
         .layer(cors)
@@ -92,6 +94,17 @@ async fn list_orders(
     state
         .infra
         .list_orders()
+        .await
+        .map(Json)
+        .map_err(internal_err)
+}
+
+async fn list_packages(
+    State(state): State<AppState>,
+) -> Result<Json<Vec<ai::Package>>, (StatusCode, String)> {
+    state
+        .infra
+        .get_packages()
         .await
         .map(Json)
         .map_err(internal_err)

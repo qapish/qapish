@@ -1,5 +1,5 @@
 [workspace]
-members = ["infra", "ai", "web", "api"]
+members = ["infra", "ai", "web", "api", "libs/persistence"]
 resolver = "2"
 
 [workspace.dependencies]
