@@ -1,0 +1,102 @@
+use ai::*;
+use axum::{
+    extract::State,
+    http::{HeaderValue, Method, StatusCode},
+    routing::{get, post},
+    Json, Router,
+};
+use infra::InfraState;
+use std::{net::SocketAddr, sync::Arc};
+use tower_http::{cors::CorsLayer, services::ServeDir, trace::TraceLayer};
+use tracing::info;
+use tracing_subscriber::EnvFilter;
+
+#[derive(Clone)]
+struct AppState {
+    infra: Arc<InfraState>,
+}
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    // logging
+    let filter = EnvFilter::try_from_default_env()
+        .unwrap_or_else(|_| EnvFilter::new("info,tower_http=info"));
+    tracing_subscriber::fmt().with_env_filter(filter).init();
+
+    let state = AppState {
+        infra: Arc::new(InfraState::new()),
+    };
+
+    let cors = CorsLayer::new()
+        .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
+        .allow_origin(HeaderValue::from_static("*"))
+        .allow_headers([
+            axum::http::header::CONTENT_TYPE,
+            axum::http::header::AUTHORIZATION,
+        ]);
+
+    // static (dist from web) served at /
+    let spa = ServeDir::new("./web/dist");
+
+    let app = Router::new()
+        .route("/api/health", get(health))
+        .route("/api/auth/signup", post(signup))
+        .route("/api/auth/login", post(login))
+        .route("/api/orders", get(list_orders).post(create_order))
+        .with_state(state)
+        .layer(cors)
+        .layer(TraceLayer::new_for_http())
+        // fallback to SPA
+        .fallback_service(spa);
+
+    let port = std::env::var("PORT").unwrap_or_else(|_| "8081".to_string());
+    let addr: SocketAddr = format!("0.0.0.0:{}", port).parse()?;
+    info!("API listening on http://{addr}");
+    axum::serve(tokio::net::TcpListener::bind(addr).await?, app).await?;
+    Ok(())
+}
+
+async fn health() -> &'static str {
+    "ok"
+}
+
+async fn signup(Json(_req): Json<AuthSignupRequest>) -> Json<AuthTokenResponse> {
+    // TODO: persist user + hash password; mTLS / PQC later
+    Json(AuthTokenResponse {
+        token: "demo-signup-token".into(),
+    })
+}
+
+async fn login(Json(_req): Json<AuthLoginRequest>) -> Json<AuthTokenResponse> {
+    // TODO: verify password; issue JWT
+    Json(AuthTokenResponse {
+        token: "demo-login-token".into(),
+    })
+}
+
+async fn create_order(
+    State(state): State<AppState>,
+    Json(req): Json<CreateOrderRequest>,
+) -> Result<Json<CreateOrderResponse>, (StatusCode, String)> {
+    state
+        .infra
+        .create_order(req)
+        .await
+        .map(Json)
+        .map_err(internal_err)
+}
+
+async fn list_orders(
+    State(state): State<AppState>,
+) -> Result<Json<Vec<OrderSummary>>, (StatusCode, String)> {
+    state
+        .infra
+        .list_orders()
+        .await
+        .map(Json)
+        .map_err(internal_err)
+}
+
+fn internal_err(e: anyhow::Error) -> (StatusCode, String) {
+    (StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+}
