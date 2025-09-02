@@ -1,9 +1,162 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap");
+// Qapish Brand Typography
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap");
 
 // Import Leptonic styles
 @import "https://cdn.jsdelivr.net/npm/leptonic@0.5/style/main.scss";
 
-// Optional: Add any custom styles here
+// Qapish Brand Colors (CSS Variables)
 :root {
-  font-family: "Roboto", sans-serif;
+  // Brand Color Palette
+  --qp-ink: #0F172A;           // Primary (slate-900)
+  --qp-ink-100: #E2E8F0;      // Light accent
+  --qp-cyan: #06B6D4;         // Accent
+  --qp-success: #22C55E;      // Success (emerald)
+  --qp-warning: #F59E0B;      // Warning (amber)
+  --qp-danger: #E11D48;       // Danger (rose)
+  --qp-surface: #FFFFFF;      // Light surface
+  --qp-surface-dark: #0B1220; // Dark surface
+  --qp-text: #0B1220;         // Text on light
+  --qp-text-dark: #E2E8F0;    // Text on dark
+
+  // Typography
+  --qp-font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --qp-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  // Apply typography
+  font-family: var(--qp-font-ui);
+
+  // Leptonic Theme Overrides (Light Theme)
+  --leptonic-color-primary: var(--qp-ink);
+  --leptonic-color-primary-variant: var(--qp-ink-100);
+  --leptonic-color-secondary: var(--qp-cyan);
+  --leptonic-color-success: var(--qp-success);
+  --leptonic-color-warn: var(--qp-warning);
+  --leptonic-color-error: var(--qp-danger);
+  --leptonic-color-on-primary: var(--qp-surface);
+  --leptonic-color-on-secondary: var(--qp-surface);
+  --leptonic-color-surface: var(--qp-surface);
+  --leptonic-color-on-surface: var(--qp-text);
+  --leptonic-color-background: var(--qp-surface);
+  --leptonic-color-on-background: var(--qp-text);
+}
+
+// Dark Theme
+@media (prefers-color-scheme: dark) {
+  :root {
+    --qp-surface: var(--qp-surface-dark);
+    --qp-text: var(--qp-text-dark);
+
+    // Leptonic Theme Overrides (Dark Theme)
+    --leptonic-color-primary: var(--qp-ink-100);
+    --leptonic-color-primary-variant: var(--qp-ink);
+    --leptonic-color-on-primary: var(--qp-ink);
+    --leptonic-color-surface: var(--qp-surface-dark);
+    --leptonic-color-on-surface: var(--qp-text-dark);
+    --leptonic-color-background: var(--qp-surface-dark);
+    --leptonic-color-on-background: var(--qp-text-dark);
+  }
+}
+
+// Force dark theme when .dark class is present
+.dark {
+  --qp-surface: var(--qp-surface-dark);
+  --qp-text: var(--qp-text-dark);
+
+  --leptonic-color-primary: var(--qp-ink-100);
+  --leptonic-color-primary-variant: var(--qp-ink);
+  --leptonic-color-on-primary: var(--qp-ink);
+  --leptonic-color-surface: var(--qp-surface-dark);
+  --leptonic-color-on-surface: var(--qp-text-dark);
+  --leptonic-color-background: var(--qp-surface-dark);
+  --leptonic-color-on-background: var(--qp-text-dark);
+}
+
+// Typography Classes
+.qp-font-mono {
+  font-family: var(--qp-font-mono);
+}
+
+// Brand-specific component styles
+.qp-hero-title {
+  font-family: var(--qp-font-ui);
+  font-weight: 800;
+  color: var(--qp-ink);
+  letter-spacing: -0.02em;
+}
+
+.qp-wordmark {
+  font-family: var(--qp-font-ui);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--qp-ink);
+}
+
+.qp-domain-lockup {
+  font-family: var(--qp-font-ui);
+  font-weight: 600;
+}
+
+.qp-domain-lockup .dot {
+  color: var(--qp-cyan);
+}
+
+// Dark theme overrides for brand elements
+@media (prefers-color-scheme: dark) {
+  .qp-hero-title,
+  .qp-wordmark {
+    color: var(--qp-text-dark);
+  }
+}
+
+.dark .qp-hero-title,
+.dark .qp-wordmark {
+  color: var(--qp-text-dark);
+}
+
+// Button overrides for brand consistency
+.leptonic-btn-primary {
+  background-color: var(--qp-cyan);
+  border-color: var(--qp-cyan);
+  color: white;
+}
+
+.leptonic-btn-primary:hover {
+  background-color: #0891b2; // Slightly darker cyan
+  border-color: #0891b2;
+}
+
+// Link styles
+a {
+  color: var(--qp-cyan);
+  text-decoration: none;
+}
+
+a:hover {
+  color: #0891b2;
+  text-decoration: underline;
+}
+
+// Code blocks
+pre,
+code {
+  font-family: var(--qp-font-mono);
+}
+
+// Ensure accessibility - maintain contrast ratios
+.qp-high-contrast {
+  color: var(--qp-ink);
+  background-color: var(--qp-surface);
+}
+
+@media (prefers-color-scheme: dark) {
+  .qp-high-contrast {
+    color: var(--qp-text-dark);
+    background-color: var(--qp-surface-dark);
+  }
+}
+
+.dark .qp-high-contrast {
+  color: var(--qp-text-dark);
+  background-color: var(--qp-surface-dark);
 }

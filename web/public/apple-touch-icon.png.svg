@@ -1,0 +1,48 @@
+<svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .bg { fill: #0F172A; }
+      .accent { fill: #06B6D4; }
+      .highlight { fill: #E2E8F0; opacity: 0.1; }
+      .text {
+        fill: #E2E8F0;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 900;
+        font-size: 80px;
+        text-anchor: middle;
+        dominant-baseline: central;
+      }
+      .shield-path {
+        fill: none;
+        stroke: #06B6D4;
+        stroke-width: 2;
+        opacity: 0.6;
+      }
+      @media (prefers-color-scheme: dark) {
+        .bg { fill: #E2E8F0; }
+        .text { fill: #0F172A; }
+        .highlight { fill: #0F172A; }
+      }
+    </style>
+  </defs>
+
+  <!-- Rounded square background for iOS -->
+  <rect x="0" y="0" width="180" height="180" rx="32" ry="32" class="bg"/>
+
+  <!-- Shield outline -->
+  <path class="shield-path" d="M90 30 L130 45 L130 90 Q130 135 90 160 Q50 135 50 90 L50 45 Z"/>
+
+  <!-- Inner highlight -->
+  <path class="highlight" d="M90 40 L120 50 L120 85 Q120 125 90 145 Q60 125 60 85 L60 50 Z"/>
+
+  <!-- Accent lines for tech feel -->
+  <rect class="accent" x="70" y="65" width="40" height="3" rx="1.5"/>
+  <rect class="accent" x="60" y="75" width="60" height="3" rx="1.5"/>
+  <rect class="accent" x="75" y="125" width="30" height="3" rx="1.5"/>
+
+  <!-- Q letter centered -->
+  <text x="90" y="90" class="text">Q</text>
+
+  <!-- Security dot in Q -->
+  <circle cx="100" cy="105" r="6" class="accent"/>
+</svg>

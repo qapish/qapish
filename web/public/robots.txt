@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://qapi.sh/sitemap.xml
+
+# Block access to sensitive areas
+Disallow: /api/
+Disallow: /admin/
+Disallow: /.well-known/
+Disallow: /logs/
+
+# Crawl delay (optional - be nice to servers)
+Crawl-delay: 1

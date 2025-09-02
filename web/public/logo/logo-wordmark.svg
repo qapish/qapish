@@ -1,0 +1,33 @@
+<svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .wordmark {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 900;
+        font-size: 32px;
+        letter-spacing: -0.04em;
+        fill: #0F172A;
+      }
+      .wordmark-dark {
+        fill: #E2E8F0;
+      }
+    </style>
+  </defs>
+
+  <!-- Light theme wordmark -->
+  <g class="light-theme">
+    <text x="10" y="38" class="wordmark">Qapish</text>
+  </g>
+
+  <!-- Dark theme wordmark (hidden by default, shown via CSS media query) -->
+  <g class="dark-theme" style="display: none;">
+    <text x="10" y="38" class="wordmark wordmark-dark">Qapish</text>
+  </g>
+
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .light-theme { display: none; }
+      .dark-theme { display: block; }
+    }
+  </style>
+</svg>

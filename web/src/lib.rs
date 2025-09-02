@@ -48,29 +48,38 @@ fn Landing() -> impl IntoView {
             {/* Hero Section */}
             <section class="hero">
                 <div class="hero-content">
+                    <div class="hero-brand">
+                        <div class="qp-wordmark">"Qapish"</div>
+                        <div class="qp-domain-lockup">
+                            "qapi"<span class="dot">"·"</span>"sh"
+                        </div>
+                    </div>
                     <div class="hero-badge">
                         "🔒 Post-Quantum Secured"
                     </div>
-                    <h1 class="hero-title">
+                    <h1 class="hero-title qp-hero-title">
                         "Defensive AI Colocation"
                     </h1>
                     <p class="hero-subtitle">
-                        "Deploy enterprise-grade AI infrastructure in the secure Balkan mountains. "
-                        "Get dedicated hardware with tailored inference engines and dynamically loadable LLMs."
+                        "PQ‑secured managed AI servers in the Balkan mountains."
                     </p>
                     <div class="hero-features">
                         <div class="feature-item">
-                            <span class="feature-icon">"⚡"</span>
-                            <span>"Lightning Fast Inference"</span>
-                        </div>
-                        <div class="feature-item">
                             <span class="feature-icon">"🛡️"</span>
-                            <span>"Military-Grade Security"</span>
+                            <span>"Post‑quantum security, end‑to‑end"</span>
                         </div>
                         <div class="feature-item">
                             <span class="feature-icon">"🔧"</span>
-                            <span>"Fully Managed Infrastructure"</span>
+                            <span>"Managed inference platforms and models"</span>
                         </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">"💎"</span>
+                            <span>"Transparent pricing, EU jurisdiction"</span>
+                        </div>
+                    </div>
+                    <div class="hero-cta">
+                        <A href="/signup" class="cta-button primary">"Order a server"</A>
+                        <A href="mailto:hello@qapi.sh" class="cta-button secondary">"Talk to engineering"</A>
                     </div>
                 </div>
                 <div class="hero-visual">
@@ -85,10 +94,9 @@ fn Landing() -> impl IntoView {
             {/* Packages Section */}
             <section class="packages-section">
                 <div class="section-header">
-                    <h2 class="section-title">"Choose Your AI Powerhouse"</h2>
+                    <h2 class="section-title">"Secure Colocation for Serious AI"</h2>
                     <p class="section-subtitle">
-                        "All packages include dedicated hardware, custom inference engines, "
-                        "and pre-configured LLMs optimized for your specific setup."
+                        "From metal to model: inference platforms and LLMs, curated and automated."
                     </p>
                 </div>
 
@@ -193,22 +201,22 @@ fn Landing() -> impl IntoView {
             {/* Security Section */}
             <section class="security-section">
                 <div class="security-content">
-                    <h2>"Enterprise Security You Can Trust"</h2>
+                    <h2>"Security, Now and Later"</h2>
                     <div class="security-features">
                         <div class="security-item">
                             <div class="security-icon">"🔐"</div>
-                            <h3>"Post-Quantum Cryptography"</h3>
-                            <p>"Future-proof encryption that protects against quantum computing attacks"</p>
+                            <h3>"Post‑Quantum Cryptography"</h3>
+                            <p>"Defense‑in‑depth, zero‑trust edge. Future-proof encryption ready for quantum threats."</p>
                         </div>
                         <div class="security-item">
                             <div class="security-icon">"🏔️"</div>
-                            <h3>"Secure Datacenter"</h3>
-                            <p>"Located in the geopolitically stable Balkan mountains with physical security"</p>
+                            <h3>"Balkan Mountain Location"</h3>
+                            <p>"Resilient power, cold climate advantage, EU jurisdiction. Place matters."</p>
                         </div>
                         <div class="security-item">
-                            <div class="security-icon">"🛡️"</div>
-                            <h3>"Isolated Networks"</h3>
-                            <p>"Each deployment runs in isolated environments with dedicated resources"</p>
+                            <div class="security-icon">"👑"</div>
+                            <h3>"Sovereignty & Privacy"</h3>
+                            <p>"Your compute, your keys, your isolation. Complete ownership and control."</p>
                         </div>
                     </div>
                 </div>
@@ -216,14 +224,27 @@ fn Landing() -> impl IntoView {
 
             {/* CTA Section */}
             <section class="final-cta">
-                <h2>"Ready to Deploy Your AI Infrastructure?"</h2>
-                <p>"Join enterprises who trust their AI workloads to our secure, high-performance platform."</p>
-                <A href="/signup" class="cta-button primary large">"Get Started Today →"</A>
+                <h2>"Performance & Reliability"</h2>
+                <p>"Low‑noise facilities, proactive monitoring, SLA backed. It's obvious and it works."</p>
+                <A href="/signup" class="cta-button primary large">"Order a server"</A>
             </section>
 
             {/* Footer */}
             <footer class="footer">
-                <p>"© 2024 Defensive AI Colocation. Secured by post-quantum cryptography."</p>
+                <div class="footer-content">
+                    <div class="footer-brand">
+                        <span class="qp-wordmark">"Qapish"</span>
+                        <span class="pronunciation">" (kah‑PEESH)"</span>
+                    </div>
+                    <p class="footer-tagline">"Secure colocation for serious AI."</p>
+                    <div class="footer-links">
+                        <a href="mailto:hello@qapi.sh">"hello@qapi.sh"</a>
+                        <span>" • "</span>
+                        <a href="mailto:support@qapi.sh">"support@qapi.sh"</a>
+                        <span>" • "</span>
+                        <a href="mailto:security@qapi.sh">"security@qapi.sh"</a>
+                    </div>
+                </div>
             </footer>
         </div>
 
@@ -231,9 +252,16 @@ fn Landing() -> impl IntoView {
             {r#"
             .landing-container {
                 min-height: 100vh;
-                background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-                color: #ffffff;
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                background: var(--qp-surface);
+                color: var(--qp-text);
+                font-family: var(--qp-font-ui);
+            }
+
+            @media (prefers-color-scheme: dark) {
+                .landing-container {
+                    background: linear-gradient(135deg, var(--qp-surface-dark) 0%, #1a1a2e 100%);
+                    color: var(--qp-text-dark);
+                }
             }
 
             .hero {
@@ -246,6 +274,38 @@ fn Landing() -> impl IntoView {
                 gap: 4rem;
             }
 
+            .hero-brand {
+                margin-bottom: 2rem;
+            }
+
+            .hero-brand .qp-wordmark {
+                font-size: 2rem;
+                display: block;
+                margin-bottom: 0.5rem;
+            }
+
+            .hero-brand .qp-domain-lockup {
+                font-size: 1.25rem;
+                color: var(--qp-cyan);
+            }
+
+            .hero-cta {
+                display: flex;
+                gap: 1rem;
+                margin-top: 2rem;
+            }
+
+            .cta-button.secondary {
+                background: transparent;
+                border: 2px solid var(--qp-cyan);
+                color: var(--qp-cyan);
+            }
+
+            .cta-button.secondary:hover {
+                background: var(--qp-cyan);
+                color: white;
+            }
+
             .hero-content {
                 flex: 1;
                 max-width: 600px;
@@ -254,11 +314,12 @@ fn Landing() -> impl IntoView {
             .hero-badge {
                 display: inline-block;
                 padding: 0.5rem 1rem;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: var(--qp-cyan);
                 border-radius: 50px;
                 font-size: 0.875rem;
                 font-weight: 600;
                 margin-bottom: 1.5rem;
+                color: white;
             }
 
             .hero-title {
@@ -266,17 +327,20 @@ fn Landing() -> impl IntoView {
                 font-weight: 800;
                 line-height: 1.1;
                 margin-bottom: 1.5rem;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
             }
 
             .hero-subtitle {
                 font-size: 1.25rem;
                 line-height: 1.6;
-                color: #b0b0b0;
+                color: var(--qp-text);
                 margin-bottom: 2rem;
+                opacity: 0.8;
+            }
+
+            @media (prefers-color-scheme: dark) {
+                .hero-subtitle {
+                    color: var(--qp-text-dark);
+                }
             }
 
             .hero-features {
@@ -411,7 +475,7 @@ fn Landing() -> impl IntoView {
                 font-size: 1.5rem;
                 font-weight: 700;
                 margin-bottom: 0.5rem;
-                color: #667eea;
+                color: var(--qp-cyan);
             }
 
             .package-description {
@@ -422,9 +486,9 @@ fn Landing() -> impl IntoView {
             .package-pricing {
                 margin-bottom: 2rem;
                 padding: 1.5rem;
-                background: rgba(102, 126, 234, 0.1);
+                background: rgba(6, 182, 212, 0.1);
                 border-radius: 12px;
-                border: 1px solid rgba(102, 126, 234, 0.2);
+                border: 1px solid rgba(6, 182, 212, 0.2);
             }
 
             .price-setup, .price-monthly {
@@ -437,7 +501,7 @@ fn Landing() -> impl IntoView {
             .price-monthly {
                 margin-bottom: 0;
                 padding-top: 0.75rem;
-                border-top: 1px solid rgba(102, 126, 234, 0.2);
+                border-top: 1px solid rgba(6, 182, 212, 0.2);
             }
 
             .price-label {
@@ -451,7 +515,7 @@ fn Landing() -> impl IntoView {
             }
 
             .price-amount.primary {
-                color: #667eea;
+                color: var(--qp-cyan);
                 font-size: 1.5rem;
             }
 
@@ -481,7 +545,7 @@ fn Landing() -> impl IntoView {
                 font-size: 1rem;
                 font-weight: 600;
                 margin-bottom: 0.75rem;
-                color: #667eea;
+                color: var(--qp-cyan);
             }
 
             .hardware-details p {
@@ -505,9 +569,9 @@ fn Landing() -> impl IntoView {
             .cta-button {
                 width: 100%;
                 padding: 1rem 2rem;
-                background: linear-gradient(135deg, #333 0%, #555 100%);
+                background: var(--qp-ink);
                 color: white;
-                border: none;
+                border: 2px solid var(--qp-ink);
                 border-radius: 8px;
                 font-size: 1rem;
                 font-weight: 600;
@@ -518,13 +582,27 @@ fn Landing() -> impl IntoView {
                 text-align: center;
             }
 
+            @media (prefers-color-scheme: dark) {
+                .cta-button {
+                    background: var(--qp-ink-100);
+                    color: var(--qp-ink);
+                    border-color: var(--qp-ink-100);
+                }
+            }
+
             .cta-button:hover {
                 transform: translateY(-2px);
                 box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             }
 
             .cta-button.primary {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: var(--qp-cyan);
+                border-color: var(--qp-cyan);
+            }
+
+            .cta-button.primary:hover {
+                background: #0891b2;
+                border-color: #0891b2;
             }
 
             .cta-button.large {
@@ -569,7 +647,7 @@ fn Landing() -> impl IntoView {
                 font-size: 1.5rem;
                 font-weight: 600;
                 margin-bottom: 1rem;
-                color: #667eea;
+                color: var(--qp-cyan);
             }
 
             .security-item p {
@@ -598,10 +676,51 @@ fn Landing() -> impl IntoView {
             }
 
             .footer {
-                padding: 2rem;
+                padding: 3rem 2rem 2rem;
                 text-align: center;
-                border-top: 1px solid #333;
-                color: #666;
+                border-top: 1px solid var(--qp-ink-100);
+                background: var(--qp-surface);
+            }
+
+            @media (prefers-color-scheme: dark) {
+                .footer {
+                    background: var(--qp-surface-dark);
+                    border-top-color: #333;
+                }
+            }
+
+            .footer-content {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            .footer-brand {
+                margin-bottom: 1rem;
+            }
+
+            .footer-brand .qp-wordmark {
+                font-size: 1.5rem;
+                font-weight: 900;
+            }
+
+            .footer-brand .pronunciation {
+                font-size: 0.875rem;
+                opacity: 0.7;
+                font-style: italic;
+            }
+
+            .footer-tagline {
+                margin-bottom: 1.5rem;
+                font-size: 1rem;
+                opacity: 0.8;
+            }
+
+            .footer-links {
+                font-size: 0.875rem;
+            }
+
+            .footer-links a {
+                color: var(--qp-cyan);
             }
 
             .loading-packages, .error-state {
@@ -613,11 +732,18 @@ fn Landing() -> impl IntoView {
             .spinner {
                 width: 40px;
                 height: 40px;
-                border: 4px solid #333;
-                border-top: 4px solid #667eea;
+                border: 4px solid var(--qp-ink-100);
+                border-top: 4px solid var(--qp-cyan);
                 border-radius: 50%;
                 animation: spin 1s linear infinite;
                 margin: 0 auto 1rem;
+            }
+
+            @media (prefers-color-scheme: dark) {
+                .spinner {
+                    border-color: #333;
+                    border-top-color: var(--qp-cyan);
+                }
             }
 
             @keyframes spin {
@@ -635,6 +761,10 @@ fn Landing() -> impl IntoView {
 
                 .hero-title {
                     font-size: 2.5rem;
+                }
+
+                .hero-cta {
+                    flex-direction: column;
                 }
 
                 .packages-grid {
@@ -768,7 +898,7 @@ fn Dashboard() -> impl IntoView {
 fn App() -> impl IntoView {
     provide_meta_context();
     view! {
-        <Root default_theme=LeptonicTheme::default()>
+        <Root default_theme=LeptonicTheme::System>
             <Router>
                 <main>
                     <Routes>

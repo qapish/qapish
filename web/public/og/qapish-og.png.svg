@@ -1,0 +1,109 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .bg {
+        fill: #0F172A;
+      }
+      .bg-gradient {
+        fill: url(#bgGradient);
+      }
+      .wordmark {
+        fill: #E2E8F0;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 900;
+        font-size: 72px;
+        letter-spacing: -0.04em;
+      }
+      .tagline {
+        fill: #E2E8F0;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 600;
+        font-size: 32px;
+        opacity: 0.9;
+      }
+      .subtitle {
+        fill: #06B6D4;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 500;
+        font-size: 24px;
+      }
+      .domain {
+        fill: #06B6D4;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 600;
+        font-size: 28px;
+      }
+      .dot {
+        fill: #06B6D4;
+      }
+      .shield {
+        fill: none;
+        stroke: #06B6D4;
+        stroke-width: 3;
+        opacity: 0.7;
+      }
+      .shield-bg {
+        fill: #06B6D4;
+        opacity: 0.1;
+      }
+      .accent-line {
+        stroke: #06B6D4;
+        stroke-width: 2;
+        opacity: 0.6;
+      }
+    </style>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A"/>
+      <stop offset="100%" style="stop-color:#1a1a2e"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" class="bg-gradient"/>
+
+  <!-- Decorative shield in background -->
+  <g transform="translate(850, 100)">
+    <path class="shield-bg" d="M80 20 L140 35 L140 80 Q140 125 80 150 Q20 125 20 80 L20 35 Z"/>
+    <path class="shield" d="M80 20 L140 35 L140 80 Q140 125 80 150 Q20 125 20 80 L20 35 Z"/>
+    <!-- Tech lines inside shield -->
+    <line x1="40" y1="60" x2="120" y2="60" class="accent-line"/>
+    <line x1="35" y1="70" x2="125" y2="70" class="accent-line"/>
+    <line x1="50" y1="110" x2="110" y2="110" class="accent-line"/>
+  </g>
+
+  <!-- Decorative elements -->
+  <g opacity="0.3">
+    <line x1="0" y1="150" x2="300" y2="150" stroke="#06B6D4" stroke-width="1"/>
+    <line x1="0" y1="480" x2="400" y2="480" stroke="#06B6D4" stroke-width="1"/>
+    <circle cx="100" cy="100" r="2" fill="#06B6D4"/>
+    <circle cx="150" cy="530" r="2" fill="#06B6D4"/>
+    <circle cx="200" cy="80" r="1.5" fill="#06B6D4"/>
+  </g>
+
+  <!-- Main content -->
+  <g transform="translate(60, 180)">
+    <!-- Brand name -->
+    <text x="0" y="80" class="wordmark">Qapish</text>
+
+    <!-- Domain -->
+    <text x="0" y="130" class="domain">qapi<tspan class="dot">·</tspan>sh</text>
+
+    <!-- Tagline -->
+    <text x="0" y="190" class="tagline">Defensive AI Colocation</text>
+
+    <!-- Subtitle -->
+    <text x="0" y="240" class="subtitle">PQ‑secured managed AI servers in the Balkan mountains</text>
+
+    <!-- Feature bullets -->
+    <g transform="translate(0, 290)" class="subtitle">
+      <text x="0" y="30">🛡️ Post‑quantum security, end‑to‑end</text>
+      <text x="0" y="65">🔧 Managed inference platforms and models</text>
+      <text x="0" y="100">💎 Transparent pricing, EU jurisdiction</text>
+    </g>
+  </g>
+
+  <!-- Footer branding -->
+  <g transform="translate(60, 580)">
+    <text x="0" y="20" class="subtitle" opacity="0.7">Secure colocation for serious AI</text>
+  </g>
+</svg>

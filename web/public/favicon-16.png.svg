@@ -1,0 +1,29 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .bg { fill: #0F172A; }
+      .accent { fill: #06B6D4; }
+      .text {
+        fill: #E2E8F0;
+        font-family: 'Inter', sans-serif;
+        font-weight: 900;
+        font-size: 12px;
+        text-anchor: middle;
+        dominant-baseline: central;
+      }
+      @media (prefers-color-scheme: dark) {
+        .bg { fill: #E2E8F0; }
+        .text { fill: #0F172A; }
+      }
+    </style>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="8" cy="8" r="8" class="bg"/>
+
+  <!-- Q letter -->
+  <text x="8" y="8" class="text">Q</text>
+
+  <!-- Small accent dot -->
+  <circle cx="10" cy="10" r="1" class="accent"/>
+</svg>

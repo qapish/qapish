@@ -1,0 +1,54 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .shield-bg {
+        fill: #0F172A;
+      }
+      .shield-accent {
+        fill: #06B6D4;
+      }
+      .shield-highlight {
+        fill: #E2E8F0;
+        opacity: 0.1;
+      }
+      .q-letter {
+        fill: #E2E8F0;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 900;
+        font-size: 28px;
+        text-anchor: middle;
+        dominant-baseline: central;
+      }
+      /* Dark theme adjustments */
+      @media (prefers-color-scheme: dark) {
+        .shield-bg {
+          fill: #E2E8F0;
+        }
+        .q-letter {
+          fill: #0F172A;
+        }
+        .shield-highlight {
+          fill: #0F172A;
+          opacity: 0.1;
+        }
+      }
+    </style>
+  </defs>
+
+  <!-- Shield outline -->
+  <path class="shield-bg" d="M32 4 L50 12 L50 28 Q50 44 32 60 Q14 44 14 28 L14 12 Z"/>
+
+  <!-- Inner shield highlight -->
+  <path class="shield-highlight" d="M32 8 L46 14 L46 26 Q46 40 32 54 Q18 40 18 26 L18 14 Z"/>
+
+  <!-- Accent lines for security/tech feel -->
+  <rect class="shield-accent" x="24" y="16" width="16" height="2" rx="1"/>
+  <rect class="shield-accent" x="20" y="20" width="24" height="2" rx="1"/>
+  <rect class="shield-accent" x="26" y="44" width="12" height="2" rx="1"/>
+
+  <!-- Q letter centered -->
+  <text x="32" y="32" class="q-letter">Q</text>
+
+  <!-- Small lock/security dot in Q -->
+  <circle cx="36" cy="36" r="2" class="shield-accent"/>
+</svg>
