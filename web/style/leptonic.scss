@@ -1,162 +1,307 @@
+// CSS Reset
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
 // Qapish Brand Typography
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap");
 
-// Import Leptonic styles
-@import "https://cdn.jsdelivr.net/npm/leptonic@0.5/style/main.scss";
+// Leptonic styles are included via the Rust crate, no need for external imports
 
 // Qapish Brand Colors (CSS Variables)
 :root {
-  // Brand Color Palette
-  --qp-ink: #0F172A;           // Primary (slate-900)
-  --qp-ink-100: #E2E8F0;      // Light accent
-  --qp-cyan: #06B6D4;         // Accent
-  --qp-success: #22C55E;      // Success (emerald)
-  --qp-warning: #F59E0B;      // Warning (amber)
-  --qp-danger: #E11D48;       // Danger (rose)
-  --qp-surface: #FFFFFF;      // Light surface
-  --qp-surface-dark: #0B1220; // Dark surface
-  --qp-text: #0B1220;         // Text on light
-  --qp-text-dark: #E2E8F0;    // Text on dark
+    // Brand Color Palette
+    --qp-ink: #0f172a; // Primary (slate-900)
+    --qp-ink-100: #e2e8f0; // Light accent
+    --qp-cyan: #06b6d4; // Accent
+    --qp-success: #22c55e; // Success (emerald)
+    --qp-warning: #f59e0b; // Warning (amber)
+    --qp-danger: #e11d48; // Danger (rose)
+    --qp-surface: #ffffff; // Light surface
+    --qp-surface-dark: #0b1220; // Dark surface
+    --qp-text: #0b1220; // Text on light
+    --qp-text-dark: #e2e8f0; // Text on dark
 
-  // Typography
-  --qp-font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --qp-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    // Typography
+    --qp-font-ui:
+        "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+    --qp-font-mono:
+        "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+        monospace;
 
-  // Apply typography
-  font-family: var(--qp-font-ui);
+    // Apply typography
+    font-family: var(--qp-font-ui);
 
-  // Leptonic Theme Overrides (Light Theme)
-  --leptonic-color-primary: var(--qp-ink);
-  --leptonic-color-primary-variant: var(--qp-ink-100);
-  --leptonic-color-secondary: var(--qp-cyan);
-  --leptonic-color-success: var(--qp-success);
-  --leptonic-color-warn: var(--qp-warning);
-  --leptonic-color-error: var(--qp-danger);
-  --leptonic-color-on-primary: var(--qp-surface);
-  --leptonic-color-on-secondary: var(--qp-surface);
-  --leptonic-color-surface: var(--qp-surface);
-  --leptonic-color-on-surface: var(--qp-text);
-  --leptonic-color-background: var(--qp-surface);
-  --leptonic-color-on-background: var(--qp-text);
+    // Leptonic Theme Overrides (Light Theme)
+    --leptonic-color-primary: var(--qp-ink);
+    --leptonic-color-primary-variant: var(--qp-ink-100);
+    --leptonic-color-secondary: var(--qp-cyan);
+    --leptonic-color-success: var(--qp-success);
+    --leptonic-color-warn: var(--qp-warning);
+    --leptonic-color-error: var(--qp-danger);
+    --leptonic-color-on-primary: var(--qp-surface);
+    --leptonic-color-on-secondary: var(--qp-surface);
+    --leptonic-color-surface: var(--qp-surface);
+    --leptonic-color-on-surface: var(--qp-text);
+    --leptonic-color-background: var(--qp-surface);
+    --leptonic-color-on-background: var(--qp-text);
 }
 
 // Dark Theme
 @media (prefers-color-scheme: dark) {
-  :root {
-    --qp-surface: var(--qp-surface-dark);
-    --qp-text: var(--qp-text-dark);
+    :root {
+        --qp-surface: var(--qp-surface-dark);
+        --qp-text: var(--qp-text-dark);
 
-    // Leptonic Theme Overrides (Dark Theme)
-    --leptonic-color-primary: var(--qp-ink-100);
-    --leptonic-color-primary-variant: var(--qp-ink);
-    --leptonic-color-on-primary: var(--qp-ink);
-    --leptonic-color-surface: var(--qp-surface-dark);
-    --leptonic-color-on-surface: var(--qp-text-dark);
-    --leptonic-color-background: var(--qp-surface-dark);
-    --leptonic-color-on-background: var(--qp-text-dark);
-  }
+        // Leptonic Theme Overrides (Dark Theme)
+        --leptonic-color-surface: var(--qp-surface-dark);
+        --leptonic-color-background: var(--qp-surface-dark);
+        --leptonic-color-on-surface: var(--qp-text-dark);
+        --leptonic-color-on-background: var(--qp-text-dark);
+        --leptonic-color-primary: var(--qp-cyan);
+        --leptonic-color-on-primary: var(--qp-ink);
+    }
 }
 
 // Force dark theme when .dark class is present
 .dark {
-  --qp-surface: var(--qp-surface-dark);
-  --qp-text: var(--qp-text-dark);
+    --qp-surface: var(--qp-surface-dark);
+    --qp-text: var(--qp-text-dark);
 
-  --leptonic-color-primary: var(--qp-ink-100);
-  --leptonic-color-primary-variant: var(--qp-ink);
-  --leptonic-color-on-primary: var(--qp-ink);
-  --leptonic-color-surface: var(--qp-surface-dark);
-  --leptonic-color-on-surface: var(--qp-text-dark);
-  --leptonic-color-background: var(--qp-surface-dark);
-  --leptonic-color-on-background: var(--qp-text-dark);
+    --leptonic-color-surface: var(--qp-surface-dark);
+    --leptonic-color-background: var(--qp-surface-dark);
+    --leptonic-color-on-surface: var(--qp-text-dark);
+    --leptonic-color-on-background: var(--qp-text-dark);
+    --leptonic-color-primary: var(--qp-cyan);
+    --leptonic-color-on-primary: var(--qp-ink);
 }
 
-// Typography Classes
-.qp-font-mono {
-  font-family: var(--qp-font-mono);
+// Global styles
+body {
+    font-family: var(--qp-font-ui);
+    color: var(--qp-text);
+    background-color: var(--qp-surface);
+}
+
+// Basic layout styles
+.landing-container {
+    min-height: 100vh;
+    width: 100%;
+}
+
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    text-align: center;
+}
+
+.hero-content {
+    max-width: 1200px;
+    width: 100%;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 1rem 0;
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin: 1rem 0;
+    opacity: 0.8;
+}
+
+.hero-features {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 2rem 0;
+    align-items: center;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.hero-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.cta-button {
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+}
+
+.cta-button.primary {
+    background-color: var(--qp-cyan);
+    color: white;
+    border: 2px solid var(--qp-cyan);
+}
+
+.cta-button.secondary {
+    background-color: transparent;
+    color: var(--qp-cyan);
+    border: 2px solid var(--qp-cyan);
+}
+
+.cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hero-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: var(--qp-cyan);
+    color: white;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 1rem;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-features {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .cta-button {
+        width: 100%;
+        text-align: center;
+    }
 }
 
 // Brand-specific component styles
 .qp-hero-title {
-  font-family: var(--qp-font-ui);
-  font-weight: 800;
-  color: var(--qp-ink);
-  letter-spacing: -0.02em;
+    font-family: var(--qp-font-ui);
+    font-weight: 800;
+    color: var(--qp-ink);
+    letter-spacing: -0.02em;
 }
 
 .qp-wordmark {
-  font-family: var(--qp-font-ui);
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  color: var(--qp-ink);
+    font-family: var(--qp-font-ui);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    color: var(--qp-ink);
+}
+
+.hero-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.qp-wordmark-logo {
+    height: 2.5rem;
+    width: auto;
+    max-width: 200px;
 }
 
 .qp-domain-lockup {
-  font-family: var(--qp-font-ui);
-  font-weight: 600;
+    font-family: var(--qp-font-ui);
+    font-weight: 600;
+    font-size: 0.875rem;
+    opacity: 0.8;
 }
 
 .qp-domain-lockup .dot {
-  color: var(--qp-cyan);
+    color: var(--qp-cyan);
 }
 
 // Dark theme overrides for brand elements
 @media (prefers-color-scheme: dark) {
-  .qp-hero-title,
-  .qp-wordmark {
-    color: var(--qp-text-dark);
-  }
+    .qp-hero-title,
+    .qp-wordmark {
+        color: var(--qp-text-dark);
+    }
 }
 
 .dark .qp-hero-title,
 .dark .qp-wordmark {
-  color: var(--qp-text-dark);
+    color: var(--qp-text-dark);
 }
 
 // Button overrides for brand consistency
 .leptonic-btn-primary {
-  background-color: var(--qp-cyan);
-  border-color: var(--qp-cyan);
-  color: white;
+    background-color: var(--qp-cyan);
+    border-color: var(--qp-cyan);
 }
 
 .leptonic-btn-primary:hover {
-  background-color: #0891b2; // Slightly darker cyan
-  border-color: #0891b2;
+    background-color: var(--qp-cyan);
+    opacity: 0.9;
 }
 
 // Link styles
 a {
-  color: var(--qp-cyan);
-  text-decoration: none;
+    color: var(--qp-cyan);
+    text-decoration: none;
 }
 
 a:hover {
-  color: #0891b2;
-  text-decoration: underline;
+    color: #0891b2;
+    text-decoration: underline;
 }
 
 // Code blocks
 pre,
 code {
-  font-family: var(--qp-font-mono);
+    font-family: var(--qp-font-mono);
 }
 
 // Ensure accessibility - maintain contrast ratios
 .qp-high-contrast {
-  color: var(--qp-ink);
-  background-color: var(--qp-surface);
+    color: var(--qp-ink);
+    background-color: var(--qp-surface);
 }
 
 @media (prefers-color-scheme: dark) {
-  .qp-high-contrast {
-    color: var(--qp-text-dark);
-    background-color: var(--qp-surface-dark);
-  }
+    .qp-high-contrast {
+        color: var(--qp-text-dark);
+        background-color: var(--qp-surface-dark);
+    }
 }
 
 .dark .qp-high-contrast {
-  color: var(--qp-text-dark);
-  background-color: var(--qp-surface-dark);
+    color: var(--qp-text-dark);
+    background-color: var(--qp-surface-dark);
 }

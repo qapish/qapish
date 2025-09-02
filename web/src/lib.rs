@@ -49,7 +49,7 @@ fn Landing() -> impl IntoView {
             <section class="hero">
                 <div class="hero-content">
                     <div class="hero-brand">
-                        <div class="qp-wordmark">"Qapish"</div>
+                        <img src="/logo/logo-wordmark.svg" alt="Qapish" class="qp-wordmark-logo" />
                         <div class="qp-domain-lockup">
                             "qapi"<span class="dot">"·"</span>"sh"
                         </div>
@@ -898,7 +898,7 @@ fn Dashboard() -> impl IntoView {
 fn App() -> impl IntoView {
     provide_meta_context();
     view! {
-        <Root default_theme=LeptonicTheme::System>
+        <Root default_theme=LeptonicTheme::Light>
             <Router>
                 <main>
                     <Routes>
