@@ -2,13 +2,17 @@ use ai::*;
 use axum::extract::Path;
 use axum::{
     extract::State,
-    http::{HeaderValue, Method, StatusCode},
+    http::{Method, StatusCode},
     routing::{get, post},
     Json, Router,
 };
 use infra::InfraState;
 use std::{net::SocketAddr, sync::Arc};
-use tower_http::{cors::CorsLayer, services::ServeDir, trace::TraceLayer};
+use tower_http::{
+    cors::{Any, CorsLayer},
+    services::ServeDir,
+    trace::TraceLayer,
+};
 use tracing::info;
 use tracing_subscriber::EnvFilter;
 
@@ -19,6 +23,9 @@ struct AppState {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    // Load .env file if it exists
+    dotenv::dotenv().ok();
+
     // logging
     let filter = EnvFilter::try_from_default_env()
         .unwrap_or_else(|_| EnvFilter::new("info,tower_http=info"));
@@ -31,11 +38,8 @@ async fn main() -> anyhow::Result<()> {
 
     let cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
-        .allow_origin(HeaderValue::from_static("*"))
-        .allow_headers([
-            axum::http::header::CONTENT_TYPE,
-            axum::http::header::AUTHORIZATION,
-        ]);
+        .allow_origin(Any)
+        .allow_headers(Any);
 
     // static (dist from web) served at /
     let spa = ServeDir::new("./web/dist");
@@ -95,7 +99,7 @@ async fn list_orders(
 ) -> Result<Json<Vec<OrderSummary>>, (StatusCode, String)> {
     state
         .infra
-        .list_orders()
+        .get_orders()
         .await
         .map(Json)
         .map_err(internal_err)

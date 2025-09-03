@@ -34,6 +34,14 @@ enum Provenance {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
+struct ProvenanceOption {
+    provenance_type: Provenance,
+    quantity_available: u32,
+    calculated_price: u32,
+    discount_percentage: Option<f64>,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
 struct Package {
     id: String,
     name: String,
@@ -50,7 +58,9 @@ struct Package {
     monthly_price_usdc: u32,
     images: Vec<PackageImage>,
     availability: Availability,
-    provenance: Provenance,
+    provenances: Vec<ProvenanceOption>,
+    min_price_usdc: Option<u32>,
+    max_price_usdc: Option<u32>,
 }
 
 #[component]
@@ -155,7 +165,14 @@ fn Landing() -> impl IntoView {
                                                     <div class="price-setup">
                                                         <span class="price-label">"Hardware & Setup"</span>
                                                         <span class="price-amount">
-                                                            "$" {pkg.setup_price_usdc.to_string()} " USDC"
+                                                            {if pkg.min_price_usdc.is_some() && pkg.max_price_usdc.is_some()
+                                                                && pkg.min_price_usdc != pkg.max_price_usdc {
+                                                                format!("${} ~ ${} USDC",
+                                                                    pkg.min_price_usdc.unwrap_or(pkg.setup_price_usdc),
+                                                                    pkg.max_price_usdc.unwrap_or(pkg.setup_price_usdc))
+                                                            } else {
+                                                                format!("${} USDC", pkg.setup_price_usdc)
+                                                            }}
                                                         </span>
                                                     </div>
                                                     <div class="price-monthly">
@@ -185,15 +202,22 @@ fn Landing() -> impl IntoView {
                                                     </div>
                                                     <div class="provenance-item">
                                                         <span class="provenance-icon">
-                                                            {match &pkg.provenance {
-                                                                Provenance::New => "🆕",
-                                                                Provenance::Used { .. } => "♻️",
+                                                            {if pkg.provenances.iter().any(|p| matches!(p.provenance_type, Provenance::Used { .. })) {
+                                                                "♻️"
+                                                            } else {
+                                                                "🆕"
                                                             }}
                                                         </span>
                                                         <span>
-                                                            {match &pkg.provenance {
-                                                                Provenance::New => "New".to_string(),
-                                                                Provenance::Used { hours } => format!("Used ({}h)", hours),
+                                                            {if pkg.provenances.len() > 1 {
+                                                                format!("{} options", pkg.provenances.len())
+                                                            } else if let Some(prov) = pkg.provenances.first() {
+                                                                match &prov.provenance_type {
+                                                                    Provenance::New => "New".to_string(),
+                                                                    Provenance::Used { hours } => format!("Used ({}h)", hours),
+                                                                }
+                                                            } else {
+                                                                "New".to_string()
                                                             }}
                                                         </span>
                                                     </div>
@@ -433,11 +457,6 @@ fn PackageDetail() -> impl IntoView {
                                 Availability::Build { hours } => format!("Custom Build - {} hour delivery", hours),
                             };
 
-                            let provenance_text = match &pkg.provenance {
-                                Provenance::New => "Brand New Hardware".to_string(),
-                                Provenance::Used { hours } => format!("Refurbished - {} hours previous usage", hours),
-                            };
-
                             let payment_policy = match &pkg.availability {
                                 Availability::InStock | Availability::Build { .. } =>
                                     "Full payment required at time of order".to_string(),
@@ -476,52 +495,8 @@ fn PackageDetail() -> impl IntoView {
                                     <div class="package-content">
                                         <div class="package-images">
                                             {
-                                                // Use fallback images if no images or placeholder URLs
-                                                let display_images = if pkg.images.is_empty() || pkg.images.iter().any(|img| img.filename.contains("placehold.co")) {
-                                                    match pkg.sku.as_str() {
-                                                        "1x-a8060-96" => vec![
-                                                            PackageImage {
-                                                                filename: "/packages/1x-a8060-96-hero.svg".to_string(),
-                                                                title: "AMD A8060 Server".to_string(),
-                                                                description: "Professional AI compute server with 96GB HBM3e memory".to_string(),
-                                                            },
-                                                            PackageImage {
-                                                                filename: "/packages/1x-a8060-96-specs.svg".to_string(),
-                                                                title: "Technical Specifications".to_string(),
-                                                                description: "Detailed hardware specifications and performance metrics".to_string(),
-                                                            }
-                                                        ],
-                                                        "2x-n5090-64" => vec![
-                                                            PackageImage {
-                                                                filename: "/packages/2x-n5090-64-hero.svg".to_string(),
-                                                                title: "Dual N5090 Configuration".to_string(),
-                                                                description: "High-performance dual GPU setup with 64GB total VRAM".to_string(),
-                                                            },
-                                                            PackageImage {
-                                                                filename: "/packages/2x-n5090-64-specs.svg".to_string(),
-                                                                title: "Dual GPU Specifications".to_string(),
-                                                                description: "Complete technical specifications for the dual N5090 setup".to_string(),
-                                                            }
-                                                        ],
-                                                        "2x-h100-160" => vec![
-                                                            PackageImage {
-                                                                filename: "/packages/2x-h100-160-hero.svg".to_string(),
-                                                                title: "Enterprise H100 Server".to_string(),
-                                                                description: "Enterprise-grade dual H100 configuration for AI training".to_string(),
-                                                            },
-                                                            PackageImage {
-                                                                filename: "/packages/2x-h100-160-specs.svg".to_string(),
-                                                                title: "Enterprise Specifications".to_string(),
-                                                                description: "Complete enterprise hardware specifications and capabilities".to_string(),
-                                                            }
-                                                        ],
-                                                        _ => pkg.images.clone()
-                                                    }
-                                                } else {
-                                                    pkg.images.clone()
-                                                };
-
-                                                display_images.iter().map(|img| {
+                                                // Use images from database
+                                                pkg.images.iter().map(|img| {
                                                     view! {
                                                         <div class="package-image">
                                                             <img src={img.filename.clone()} alt={img.title.clone()} />
@@ -579,7 +554,44 @@ fn PackageDetail() -> impl IntoView {
                                                 <h2>"Availability & Delivery"</h2>
                                                 <div class="availability-info">
                                                     <div class="availability-status">{availability_text}</div>
-                                                    <div class="provenance-info">{provenance_text}</div>
+                                                </div>
+                                                <h3>"Provenance Options"</h3>
+                                                <div class="provenance-options">
+                                                    {pkg.provenances.iter().map(|prov| {
+                                                        let provenance_label = match &prov.provenance_type {
+                                                            Provenance::New => "Brand New".to_string(),
+                                                            Provenance::Used { hours } => {
+                                                                let years = *hours as f32 / 8760.0;
+                                                                if years < 1.0 {
+                                                                    format!("Used ({} hours)", hours)
+                                                                } else {
+                                                                    format!("Used ({:.1} years)", years)
+                                                                }
+                                                            }
+                                                        };
+                                                        view! {
+                                                            <div class="provenance-option-card">
+                                                                <div class="provenance-header">
+                                                                    <span class="provenance-label">{provenance_label}</span>
+                                                                    <span class="provenance-quantity">
+                                                                        {format!("{} available", prov.quantity_available)}
+                                                                    </span>
+                                                                </div>
+                                                                <div class="provenance-pricing">
+                                                                    <span class="provenance-price">
+                                                                        "$" {prov.calculated_price} " USDC"
+                                                                    </span>
+                                                                    {prov.discount_percentage.map(|discount| {
+                                                                        view! {
+                                                                            <span class="provenance-discount">
+                                                                                {format!("-{:.0}%", discount)}
+                                                                            </span>
+                                                                        }
+                                                                    })}
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    }).collect_view()}
                                                 </div>
                                             </div>
 
@@ -588,7 +600,16 @@ fn PackageDetail() -> impl IntoView {
                                                 <div class="pricing-details">
                                                     <div class="price-item">
                                                         <span class="price-label">"Hardware & Setup"</span>
-                                                        <span class="price-amount">"$"{pkg.setup_price_usdc}" USDC"</span>
+                                                        <span class="price-amount">
+                                                            {if pkg.min_price_usdc.is_some() && pkg.max_price_usdc.is_some()
+                                                                && pkg.min_price_usdc != pkg.max_price_usdc {
+                                                                format!("${} ~ ${} USDC",
+                                                                    pkg.min_price_usdc.unwrap_or(pkg.setup_price_usdc),
+                                                                    pkg.max_price_usdc.unwrap_or(pkg.setup_price_usdc))
+                                                            } else {
+                                                                format!("${} USDC", pkg.setup_price_usdc)
+                                                            }}
+                                                        </span>
                                                     </div>
                                                     <div class="price-item">
                                                         <span class="price-label">"Monthly Hosting"</span>

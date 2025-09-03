@@ -72,14 +72,14 @@ db-setup:
         echo "   Or use Podman: just db-podman"; \
         exit 1; \
     fi
-    @if ! sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -qw qapish; then \
+    @if ! psql -lqt | cut -d \| -f 1 | grep -qw qapish; then \
         echo "📊 Creating database 'qapish'..."; \
-        sudo -u postgres createdb qapish; \
+        createdb qapish; \
     else \
         echo "✅ Database 'qapish' already exists"; \
     fi
-    @export DATABASE_URL="postgresql://postgres:password@localhost:5432/qapish" && \
-    echo "DATABASE_URL=$$DATABASE_URL" > .env
+    @echo "DATABASE_URL=postgresql:///qapish" > .env
+    @echo "✅ Created .env file with socket-based connection"
 
 # Run PostgreSQL in Podman (alternative to local install)
 db-podman:

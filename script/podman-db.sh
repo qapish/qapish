@@ -104,6 +104,12 @@ EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
 
+DO $$ BEGIN
+    ALTER TYPE gpu_class ADD VALUE 'Radeon_8060S';
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
 CREATE TABLE IF NOT EXISTS server_orders (
   id uuid PRIMARY KEY,
   org_id uuid NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,

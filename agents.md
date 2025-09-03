@@ -214,3 +214,8 @@ This document tells human and AI contributors how to work inside this repo.
 - **Third-party warnings:** Tolerated if they originate in dependencies; **our code** should be warnings-free.
 - **CI:** Do not mark a PR “complete” if any required build/test job is red.
 - **Reproducibility:** No environment-specific hacks. Default features should build without local secrets or root privileges.
+
+
+## Acknowledgement of This Guide
+
+Before starting work or before marking a contribution complete, acknowledge you’ve read and understood this document.
